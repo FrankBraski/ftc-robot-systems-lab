@@ -66,7 +66,7 @@ nav.rail{position:sticky;top:64px;align-self:start;display:flex;flex-direction:c
 .rail .chk.on{background:var(--good);border-color:var(--good)}
 @media (max-width:860px){
   .shell{grid-template-columns:minmax(0,1fr)}
-  nav.rail{position:static;flex-direction:row;overflow-x:auto;gap:14px;padding-bottom:6px}
+  nav.rail{position:static;flex-direction:row;overflow-x:auto;gap:14px;padding-bottom:6px;min-width:0}
   .rail-group{flex-direction:row;align-items:center;flex:none}
   .rail-group .eyebrow{display:none}
   .rail a{white-space:nowrap;background:var(--surface);border:1px solid var(--line)}
@@ -85,7 +85,7 @@ main{min-width:0;display:flex;flex-direction:column;gap:22px}
 .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:22px;display:flex;flex-direction:column;gap:14px;min-width:0}
 .panel > header{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
 .panel > header .eyebrow{margin-left:auto}
-.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:22px}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:22px}
 .cols > *{min-width:0}
 ul.list{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:6px}
 ul.list li::marker{color:var(--tape)}
@@ -120,7 +120,7 @@ th{font-family:var(--mono);font-size:.72rem;letter-spacing:.1em;text-transform:u
 .q{display:flex;flex-direction:column;gap:8px;padding:14px 0;border-top:1px solid var(--line)}
 .q:first-of-type{border-top:0;padding-top:0}
 .q p{font-weight:700}
-.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:6px}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr));gap:6px}
 .opt{text-align:left;padding:10px 12px;border:1.5px solid var(--line);border-radius:6px;background:var(--surface);cursor:pointer;font-size:.93rem}
 .opt:hover{border-color:var(--ink)}
 .opt.right{border-color:var(--good);background:color-mix(in srgb,var(--good) 12%,var(--surface))}
@@ -128,7 +128,7 @@ th{font-family:var(--mono);font-size:.72rem;letter-spacing:.1em;text-transform:u
 .quiz-foot{display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-family:var(--mono);font-size:.85rem}
 
 /* flashcards */
-.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(190px,100%),1fr));gap:12px}
 .card{perspective:800px;min-height:150px;cursor:pointer;border:0;background:none;padding:0;text-align:left}
 .card-in{position:relative;width:100%;height:100%;min-height:150px;transition:transform .45s;transform-style:preserve-3d}
 .card.flip .card-in{transform:rotateY(180deg)}
@@ -148,7 +148,7 @@ th{font-family:var(--mono);font-size:.72rem;letter-spacing:.1em;text-transform:u
 .ctrl output{font-family:var(--mono);font-weight:700;font-variant-numeric:tabular-nums}
 .ctrl input[type=range]{grid-column:1/-1;width:100%;accent-color:var(--tape)}
 .ctrl select{padding:6px;border-radius:5px;border:1px solid var(--line);background:var(--surface)}
-.readout{background:var(--ink);color:var(--bg);border-radius:var(--r);padding:14px 16px;display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:12px}
+.readout{background:var(--ink);color:var(--bg);border-radius:var(--r);padding:14px 16px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(110px,100%),1fr));gap:12px}
 .readout div{display:flex;flex-direction:column;gap:2px}
 .readout b{font-family:var(--mono);font-size:1.5rem;color:var(--tape);font-variant-numeric:tabular-nums;line-height:1.1}
 .readout span{font-family:var(--mono);font-size:.68rem;opacity:.75;text-transform:uppercase;letter-spacing:.08em}
@@ -178,11 +178,39 @@ canvas.view{width:100%;display:block;border-radius:6px;background:var(--tile);bo
 .prog-list select,.prog-list input{padding:6px;border-radius:5px;border:1px solid var(--line);background:var(--surface);font-family:var(--mono);font-size:.88rem}
 .prog-list input{width:76px}
 .prog-list .x{margin-left:auto;border:0;background:none;cursor:pointer;color:var(--muted);font-size:1.1rem}
-.path{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.path{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr));gap:12px}
 .path a{display:flex;flex-direction:column;gap:4px;text-decoration:none;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--gc);border-radius:0 0 var(--r) var(--r);padding:14px}
 .path a b{font-family:var(--display);font-size:1.3rem;text-transform:uppercase}
 .path a span{font-size:.88rem;color:var(--muted)}
 .done-bar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:space-between;border-top:3px solid var(--ink);padding-top:18px}
+.acct{display:flex;align-items:center;gap:10px;min-height:40px}
+.who-me{display:flex;align-items:center;gap:8px;font-size:.85rem}
+.who-me img{width:28px;height:28px;border-radius:50%;background:var(--muted)}
+.who-me small{display:block;font-family:var(--mono);font-size:.68rem;opacity:.8}
+.who-me button{background:transparent;border:1px solid rgba(127,127,127,.6);color:inherit;border-radius:5px;padding:4px 8px;cursor:pointer;font-size:.75rem}
+.who-me[data-s="bad"] small{color:var(--tape)}
+@media (max-width:640px){.acct{width:100%}}
+.signin-card{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(140px,100%),1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.tiles div{background:var(--surface);padding:14px}
+.tiles b{display:block;font-family:var(--display);font-size:2.1rem;line-height:1;font-variant-numeric:tabular-nums}
+.tiles span{font-family:var(--mono);font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.grid-t td,.grid-t th{padding:7px 8px;white-space:nowrap}
+.grid-t th.m{text-align:center;font-size:.66rem}
+.grid-t td.c{text-align:center}
+.grid-t tbody tr{cursor:pointer}
+.grid-t tbody tr:hover td{background:var(--sunk)}
+.grid-t tbody tr.sel td{background:color-mix(in srgb,var(--tape) 14%,var(--surface))}
+.grid-t tfoot td{font-family:var(--mono);font-size:.74rem;color:var(--muted);border-top:2px solid var(--ink)}
+.cell{display:inline-flex;align-items:center;justify-content:center;min-width:44px;height:26px;border-radius:5px;font-family:var(--mono);font-size:.74rem;font-weight:700}
+.cell.done{background:var(--good);color:#fff}
+.cell.started{background:color-mix(in srgb,var(--tape) 35%,transparent);color:var(--ink)}
+.cell.none{background:var(--sunk);color:var(--muted)}
+.who{display:flex;align-items:center;gap:8px}
+.who img{width:24px;height:24px;border-radius:50%;background:var(--sunk)}
+.who small{display:block;color:var(--muted);font-family:var(--mono);font-size:.7rem}
+.bar{height:10px;background:var(--sunk);border:1px solid var(--line);border-radius:5px;overflow:hidden}
+.bar b{display:block;height:100%;background:var(--gc,var(--good))}
 footer.foot{max-width:1240px;margin:0 auto;padding:0 max(16px,env(safe-area-inset-right,0px)) 40px max(16px,env(safe-area-inset-left,0px));font-size:.8rem;color:var(--muted)}
 </style>
 </head>
@@ -190,19 +218,29 @@ footer.foot{max-width:1240px;margin:0 auto;padding:0 max(16px,env(safe-area-inse
 <header class="top"><div class="top-in">
   <div class="brand"><i aria-hidden="true"></i>Robot Systems Lab <small>FTC · 2026–27</small></div>
   <div class="prog"><span id="progTxt"></span><div class="prog-bar"><b id="progBar"></b></div></div>
+  <div class="acct" id="acct" hidden><div id="gbtn"></div><div class="who-me" id="whoMe" hidden><img id="meImg" alt=""><span><b id="meName"></b><small id="meSync"></small></span><button type="button" id="signOut">Sign out</button></div></div>
 </div></header>
 <div class="shell">
   <nav class="rail" id="rail" aria-label="Modules"></nav>
   <main id="main"></main>
 </div>
-<footer class="foot">Built for FIRST Tech Challenge students. Not an official FIRST resource. Always check the current season’s Game Manual for field layouts, starting tiles, and AprilTag IDs. Progress is saved in this browser only.</footer>
+<footer class="foot">Built for FIRST Tech Challenge students. Not an official FIRST resource. Always check the current season’s Game Manual for field layouts, starting tiles, and AprilTag IDs. Progress is saved in this browser, and to your teacher’s class sheet when you sign in with Google.</footer>
 
 <script>
-/* ---------- storage (this browser only) ---------- */
+/* ---------- class tracking setup (fill in after SETUP.md) ---------- */
+const CLASS={
+  clientId:'',   // Google OAuth Client ID, ends in .apps.googleusercontent.com
+  endpoint:''    // Apps Script web app URL, ends in /exec
+};
+const TRACKING=!!(CLASS.clientId&&CLASS.endpoint);
+
+/* ---------- storage: this browser, plus the class Sheet when signed in ---------- */
 const KEY='robot-systems-lab-v1';
-let S={done:{},quiz:{}};
-try{const raw=localStorage.getItem(KEY);if(raw)S=Object.assign(S,JSON.parse(raw));}catch(e){}
-function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+const blank=()=>({done:{},quiz:{},attempts:{},updatedAt:0});
+function loadLocal(k){try{const raw=localStorage.getItem(k);return raw?Object.assign(blank(),JSON.parse(raw)):blank();}catch(e){return blank();}}
+let S=loadLocal(KEY),lsKey=KEY,workedThisVisit=false;
+const ME={token:'',email:'',name:'',picture:'',exp:0,isTeacher:false,sheetUrl:'',sync:'off'};
+function save(){S.updatedAt=Date.now();workedThisVisit=true;try{localStorage.setItem(lsKey,JSON.stringify(S));}catch(e){}queuePush();}
 const $=(s,r=document)=>r.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
@@ -279,7 +317,7 @@ function wireQuiz(root,id){
       const w=qe.querySelector('.why');if(pick!==undefined){n++;if(pick===q[2])right++;w.hidden=false;w.textContent=(pick===q[2]?'Correct. ':'Not quite. ')+q[3];}else w.hidden=true;});
     box.querySelector('.qscore').innerHTML=n===qs.length?(right===qs.length?`<span class="pill ok">${right}/${qs.length} · module complete</span>`:`${right}/${qs.length} correct. Reset and try again to complete the module.`):`${n}/${qs.length} answered`;
     if(n===qs.length&&right===qs.length&&!S.done[id]){S.done[id]=true;save();renderRail(id);paintDone(id);}}
-  box.addEventListener('click',e=>{const b=e.target.closest('.opt');if(b){const i=+b.closest('.q').dataset.i;if(S.quiz[id][i]===undefined){S.quiz[id][i]=+b.dataset.j;save();paint();}}if(e.target.closest('.qreset')){S.quiz[id]={};save();paint();}});
+  box.addEventListener('click',e=>{const b=e.target.closest('.opt');if(b){const i=+b.closest('.q').dataset.i;if(S.quiz[id][i]===undefined){S.quiz[id][i]=+b.dataset.j;save();paint();}}if(e.target.closest('.qreset')){S.quiz[id]={};S.attempts[id]=(S.attempts[id]||0)+1;save();paint();}});
   paint();
 }
 const cardsHTML=list=>`<div class="cards">${list.map(c=>`<button class="card" type="button" aria-label="${esc(c[0])}: flip card"><div class="card-in"><div class="card-face card-front"><b>${esc(c[0])}</b><span class="hint">Tap to flip</span></div><div class="card-face card-back">${esc(c[1])}</div></div></button>`).join('')}</div>`;
@@ -301,6 +339,7 @@ function renderRail(cur){
     for(const m of MODS.filter(x=>x.g===g))h+=`<a href="#${m.id}" ${m.id===cur?'aria-current="page"':''}><span class="num">${m.num}</span>${esc(m.title)}${m.id==='start'?'':`<span class="chk ${S.done[m.id]?'on':''}"></span>`}</a>`;
     h+='</div>';
   }
+  if(ME.isTeacher)h+=`<div class="rail-group" style="--gc:var(--good)"><span class="eyebrow">Teacher</span><a href="#teacher" ${cur==='teacher'?'aria-current="page"':''}><span class="num">⌂</span>Class dashboard</a></div>`;
   $('#rail').innerHTML=h;
   const n=TRACKED.filter(m=>S.done[m.id]).length;
   $('#progTxt').textContent=`${n} / ${TRACKED.length} complete`;$('#progBar').style.width=(n/TRACKED.length*100)+'%';
@@ -311,6 +350,7 @@ const BLURB={chassis:'Frame, size limits, center of gravity, materials.',drivetr
 function renderStart(){
   return `<section class="hero"><div><span class="eyebrow">FIRST Tech Challenge · Robot Systems</span><h1>Every subsystem, one lab.</h1><p class="lede">Eight hands-on modules that take you from bare chassis to a robot that shoots, sees AprilTags, and runs autonomous from any starting tile on either alliance.</p></div>
   <div class="stats"><div><b>8</b><span>Modules</span></div><div><b>5</b><span>Interactive tools</span></div><div><b>18 in</b><span>Start cube</span></div><div><b>12 ft</b><span>Field</span></div></div></section>
+  ${TRACKING?(ME.email?`<section class="panel"><div class="signin-card"><div style="flex:1 1 260px;min-width:0"><h2>Hi, ${esc(ME.name.split(' ')[0]||'there')}</h2><p class="why">Your progress saves to your teacher’s class sheet as you work. ${esc(SYNC_TXT[ME.sync]||'')}</p></div>${ME.isTeacher?'<a class="btn tape" href="#teacher">Class dashboard →</a>':''}</div></section>`:`<section class="panel"><div class="signin-card"><div style="flex:1 1 260px;min-width:0"><h2>Sign in to save your progress</h2><p class="why">Use your Google account so your teacher can see what you’ve finished. Without signing in, progress stays in this browser only.</p></div><div id="gbtn2"></div></div></section>`):''}
   <section class="panel"><header><h2>Modules</h2><span class="eyebrow">Work in order, or jump in</span></header><div class="path">${TRACKED.map(m=>`<a href="#${m.id}" style="--gc:${GROUPS[m.g][1]}"><span class="eyebrow">${m.num} · ${GROUPS[m.g][0]}</span><b>${esc(m.title)}</b><span>${BLURB[m.id]}</span></a>`).join('')}</div></section>
   <section class="panel"><header><h2>How to use this lab</h2></header>${listHTML(['Read each module, try the interactive tool, then take the quiz. A perfect quiz score marks the module complete.','Progress saves in this browser only. Use the same computer and browser to keep it.','Code samples use the FTC SDK in Java. Blocks users will find the same ideas in the matching blocks.','Field drawings are generic examples. This season’s Game Manual is the authority on starting tiles, goals, and AprilTag IDs.'])}
   <p class="why">Helpful references: <a href="https://ftc-docs.firstinspires.org" target="_blank" rel="noopener">FTC Docs</a> (SDK, VisionPortal, AprilTags) and <a href="https://gm0.org" target="_blank" rel="noopener">Game Manual 0</a> (robot design).</p></section>`;
@@ -816,20 +856,126 @@ function wireAprilTags(){
   sync();draw();
 }
 
+/* ---------- progress math ---------- */
+function qstat(st,id){const q=QUIZ[id];if(!q)return null;const a=(st.quiz||{})[id]||{};let n=0,r=0;q.forEach((x,i)=>{if(a[i]!==undefined){n++;if(+a[i]===x[2])r++;}});return{n,r,t:q.length};}
+function mstatus(st,id){if((st.done||{})[id])return'done';const q=qstat(st,id);return q&&q.n?'started':'none';}
+const IDS=TRACKED.map(m=>m.id);
+const pct=(st,ids)=>Math.round(ids.filter(i=>(st.done||{})[i]).length/ids.length*100);
+function summary(st){const mods={};IDS.forEach(id=>{const s=mstatus(st,id),q=qstat(st,id);mods[id]=s==='done'?`complete${q&&q.n?` (quiz ${q.r}/${q.t})`:''}`:s==='started'?`quiz ${q.r}/${q.t}`:'';});return{overall:pct(st,IDS),modules:mods};}
+function ago(ts){if(!ts)return'never';const d=(Date.now()-ts)/864e5;return d<1/24?'just now':d<1?Math.round(d*24)+' h ago':Math.round(d)+' d ago';}
+
+/* ---------- Google sign-in + class sheet sync ---------- */
+function jwtPayload(t){try{const b=t.split('.')[1].replace(/-/g,'+').replace(/_/g,'/');return JSON.parse(decodeURIComponent(escape(atob(b))));}catch(e){return{};}}
+async function api(action,extra){const r=await fetch(CLASS.endpoint,{method:'POST',body:JSON.stringify(Object.assign({action,idToken:ME.token},extra||{}))});return r.json();}
+const SYNC_TXT={off:'Not signed in',loading:'Loading your progress…',saving:'Saving…',synced:'Saved to class sheet',expired:'Signed out after 1 hour. Sign in again to keep saving.',error:'Couldn’t reach the class sheet. Saved in this browser.'};
+function setSync(s){ME.sync=s;const el=$('#meSync');if(el)el.textContent=SYNC_TXT[s];const w=$('#whoMe');if(w)w.dataset.s=(s==='expired'||s==='error')?'bad':'ok';if(s==='expired')showButton(true);}
+function paintMe(){const w=$('#whoMe');w.hidden=!ME.email;if(ME.email){$('#meImg').src=ME.picture||'';$('#meName').textContent=ME.name;setSync(ME.sync);}}
+function renderBtn(el){if(el&&window.google&&google.accounts&&!el.dataset.r){google.accounts.id.renderButton(el,{theme:'filled_black',size:'medium',text:'signin_with',shape:'pill'});el.dataset.r='1';}}
+function showButton(show){const b=$('#gbtn');b.hidden=!show;if(show)renderBtn(b);}
+let pushT=0,pushing=false,again=false;
+function queuePush(){if(!ME.token||!TRACKING)return;clearTimeout(pushT);setSync('saving');pushT=setTimeout(push,1500);}
+async function push(){
+  if(!ME.token)return;if(Date.now()/1000>ME.exp-20){setSync('expired');return;}
+  if(pushing){again=true;return;}pushing=true;
+  try{const r=await api('save',{progress:S,summary:summary(S)});setSync(r.ok?'synced':r.error==='auth'?'expired':'error');}catch(e){setSync('error');}
+  pushing=false;if(again){again=false;push();}
+}
+async function onCredential(resp){
+  const p=jwtPayload(resp.credential),email=(p.email||'').toLowerCase(),sameUser=email===ME.email;
+  ME.token=resp.credential;ME.email=email;ME.name=p.name||email;ME.picture=p.picture||'';ME.exp=p.exp||0;
+  showButton(false);paintMe();
+  if(sameUser&&ME.sync==='expired'){await push();return;}   // re-sign-in after the 1-hour token ran out
+  const anon=S;lsKey=KEY+':'+email;let local=loadLocal(lsKey);
+  if(!local.updatedAt&&workedThisVisit)local=anon;          // keep work done before signing in this visit
+  S=local;setSync('loading');
+  try{
+    const r=await api('load');
+    if(!r.ok){setSync(r.error==='auth'?'expired':'error');route();return;}
+    ME.isTeacher=!!r.isTeacher;ME.sheetUrl=r.sheetUrl||'';
+    const remote=r.progress;
+    if(remote&&(remote.updatedAt||0)>=S.updatedAt){S=Object.assign(blank(),remote);try{localStorage.setItem(lsKey,JSON.stringify(S));}catch(e){}setSync('synced');}
+    else if(S.updatedAt){try{localStorage.setItem(lsKey,JSON.stringify(S));}catch(e){}await push();}
+    else setSync('synced');
+  }catch(e){setSync('error');}
+  route();
+}
+function signOut(){
+  if(window.google)google.accounts.id.disableAutoSelect();
+  Object.assign(ME,{token:'',email:'',name:'',picture:'',exp:0,isTeacher:false,sheetUrl:'',sync:'off'});
+  lsKey=KEY;S=blank();workedThisVisit=false;TEACH.rows=null;TEACH.sel=null;
+  paintMe();showButton(true);if(location.hash==='#teacher')location.hash='start';else route();
+}
+function initGoogle(){
+  if(!TRACKING)return;$('#acct').hidden=false;$('#signOut').onclick=signOut;
+  const s=document.createElement('script');s.src='https://accounts.google.com/gsi/client';s.async=true;
+  s.onload=()=>{google.accounts.id.initialize({client_id:CLASS.clientId,callback:onCredential,auto_select:true,cancel_on_tap_outside:true});showButton(true);renderBtn($('#gbtn2'));google.accounts.id.prompt();};
+  document.head.appendChild(s);
+}
+
+/* ---------- teacher: class dashboard ---------- */
+const AREAS={build:['chassis','drivetrain'],score:['intake','shooter'],auto:['autonomous','starts'],see:['vision','apriltags']};
+const TEACH={rows:null,area:'all',sel:null,sort:'name',loading:false,err:''};
+function renderTeacher(){
+  return `<section class="hero"><div><span class="eyebrow" style="color:var(--good)">Teacher view</span><h1>Class dashboard</h1><p class="lede">Every student who has signed in with Google, from your class sheet. Click a student for quiz details.</p></div>
+  <div class="stats"><div style="grid-column:1/-1"><b style="font-size:1rem" id="tState">Loading…</b><span>Class sheet</span></div></div></section><div id="tBody" style="display:flex;flex-direction:column;gap:22px"></div>`;
+}
+async function loadRoster(){
+  if(TEACH.loading)return;TEACH.loading=true;TEACH.err='';paintTeacher();
+  try{const r=await api('roster');if(r.ok){TEACH.rows=r.rows.map(x=>Object.assign(x,{st:Object.assign(blank(),x.progress||{})}));}else TEACH.err=r.error==='forbidden'?'forbidden':r.error==='auth'?'expired':'error';}
+  catch(e){TEACH.err='error';}
+  TEACH.loading=false;paintTeacher();
+}
+function paintTeacher(){
+  const el=$('#tBody');if(!el)return;const st=$('#tState');
+  if(!ME.isTeacher){el.innerHTML=`<section class="panel"><p>Sign in with a teacher account to see the class dashboard.</p></section>`;st.textContent='Not available';return;}
+  if(TEACH.err){st.textContent='Problem loading';el.innerHTML=`<section class="panel"><p>${TEACH.err==='expired'?'Your sign-in expired. Sign in again (top right), then press Refresh.':TEACH.err==='forbidden'?'This Google account isn’t on the teacher list in the Apps Script.':'Couldn’t reach the class sheet. Check the Apps Script deployment, then press Refresh.'}</p><div class="btn-row"><button class="btn" type="button" id="tRefresh">Refresh</button></div></section>`;$('#tRefresh').onclick=loadRoster;return;}
+  if(!TEACH.rows){st.textContent='Loading…';el.innerHTML='';return;}
+  st.textContent=`Loaded ${new Date().toLocaleTimeString([], {hour:'numeric',minute:'2-digit'})}`;
+  const rows=TEACH.rows.slice();rows.forEach(r=>{r.label=r.name||r.email;r.p=pct(r.st,IDS);});
+  rows.sort((a,b)=>TEACH.sort==='pct'?b.p-a.p||a.label.localeCompare(b.label):TEACH.sort==='recent'?(b.st.updatedAt||0)-(a.st.updatedAt||0):a.label.localeCompare(b.label));
+  const top=`<div class="btn-row"><button class="btn ghost" type="button" id="tRefresh">Refresh</button>${ME.sheetUrl?`<a class="btn ghost" href="${esc(ME.sheetUrl)}" target="_blank" rel="noopener">Open class sheet</a>`:''}</div>`;
+  if(!rows.length){el.innerHTML=`<section class="panel"><h2>No students yet</h2><p>Share the site link with your students and have them press “Sign in with Google.” They appear here after their first save (answering a quiz question or marking a module complete).</p>${top}</section>`;$('#tRefresh').onclick=loadRoster;return;}
+  const ids=TEACH.area==='all'?IDS:AREAS[TEACH.area],n=rows.length;
+  const avg=Math.round(rows.reduce((s,r)=>s+pct(r.st,ids),0)/n),fin=rows.filter(r=>pct(r.st,ids)===100).length;
+  const none=rows.filter(r=>ids.every(i=>mstatus(r.st,i)==='none')).length,idle=rows.filter(r=>!r.st.updatedAt||Date.now()-r.st.updatedAt>7*864e5).length;
+  const tab=(k,l)=>`<button type="button" data-area="${k}" aria-pressed="${TEACH.area===k}">${l}</button>`;
+  const areaBars=Object.keys(AREAS).map(g=>{const p=Math.round(rows.reduce((s,r)=>s+pct(r.st,AREAS[g]),0)/n);return`<div style="--gc:${GROUPS[g][1]};display:flex;flex-direction:column;gap:6px;min-width:0"><span class="eyebrow" style="color:${GROUPS[g][1]};font-weight:700">${GROUPS[g][0]}</span><div class="bar"><b style="width:${p}%"></b></div><span class="why">${p}% average · ${rows.filter(r=>pct(r.st,AREAS[g])===100).length} of ${n} finished</span></div>`;}).join('');
+  const cell=(r,id)=>{const s=mstatus(r.st,id),q=qstat(r.st,id);return`<span class="cell ${s}" title="${esc(MODS.find(m=>m.id===id).title)}">${s==='done'?'✓':s==='started'?`${q.r}/${q.t}`:'·'}</span>`;};
+  let h=`<section class="panel"><header><h2>${TEACH.area==='all'?'Overall':GROUPS[TEACH.area][0]}</h2><div class="seg" role="group" aria-label="Area">${tab('all','Overall')}${tab('build','Build')}${tab('score','Score')}${tab('auto','Autonomous')}${tab('see','Vision')}</div></header>
+   <div class="tiles"><div><b>${n}</b><span>Students</span></div><div><b>${avg}%</b><span>Average complete</span></div><div><b>${fin}</b><span>Finished ${TEACH.area==='all'?'everything':'this area'}</span></div><div><b>${none}</b><span>Not started</span></div><div><b>${idle}</b><span>Inactive 7+ days</span></div></div>
+   ${TEACH.area==='all'?`<div class="cols">${areaBars}</div>`:''}${top}</section>`;
+  h+=`<section class="panel"><header><h2>Students</h2><label for="tSort" class="why" style="margin-left:auto">Sort <select id="tSort" style="padding:6px;border-radius:5px;border:1px solid var(--line);background:var(--surface)"><option value="name" ${TEACH.sort==='name'?'selected':''}>Name</option><option value="pct" ${TEACH.sort==='pct'?'selected':''}>Most complete</option><option value="recent" ${TEACH.sort==='recent'?'selected':''}>Recently active</option></select></label></header>
+   <p class="why"><span class="cell done" style="min-width:22px;height:18px">✓</span> complete · <span class="cell started" style="min-width:30px;height:18px">2/4</span> quiz in progress · <span class="cell none" style="min-width:22px;height:18px">·</span> not started</p>
+   <div class="tbl-wrap"><table class="grid-t"><thead><tr><th>Student</th><th>Done</th>${ids.map(id=>`<th class="m" title="${esc(MODS.find(m=>m.id===id).title)}">${MODS.find(m=>m.id===id).num}</th>`).join('')}<th>Last active</th></tr></thead><tbody>
+   ${rows.map(r=>`<tr data-e="${esc(r.email)}" tabindex="0" class="${TEACH.sel===r.email?'sel':''}"><td><div class="who"><img src="${esc(r.picture||'')}" alt=""><div>${esc(r.label)}<small>${esc(r.email)}</small></div></div></td><td class="mono">${pct(r.st,ids)}%</td>${ids.map(id=>`<td class="c">${cell(r,id)}</td>`).join('')}<td class="why">${ago(r.st.updatedAt)}</td></tr>`).join('')}
+   </tbody><tfoot><tr><td>Class complete</td><td></td>${ids.map(id=>`<td class="c">${Math.round(rows.filter(r=>(r.st.done||{})[id]).length/n*100)}%</td>`).join('')}<td></td></tr></tfoot></table></div></section>`;
+  const sel=rows.find(r=>r.email===TEACH.sel);
+  if(sel)h+=`<section class="panel" id="tDetail"><header><h2>${esc(sel.label)}</h2><span class="eyebrow">${pct(sel.st,IDS)}% overall · last active ${ago(sel.st.updatedAt)}</span></header><p class="why">${esc(sel.email)}</p>
+   <div class="tbl-wrap"><table><thead><tr><th>Module</th><th>Status</th><th>Quiz</th><th>Quiz resets</th></tr></thead><tbody>${IDS.map(id=>{const s=mstatus(sel.st,id),q=qstat(sel.st,id);return`<tr><td>${MODS.find(m=>m.id===id).num} · ${esc(MODS.find(m=>m.id===id).title)}</td><td>${s==='done'?'<span class="pill ok">Complete</span>':s==='started'?'<span class="pill">In progress</span>':'<span class="pill">Not started</span>'}</td><td class="mono">${q&&q.n?`${q.r}/${q.t}${q.n<q.t?` (${q.n} answered)`:''}`:'–'}</td><td class="mono">${(sel.st.attempts||{})[id]||0}</td></tr>`;}).join('')}</tbody></table></div></section>`;
+  el.innerHTML=h;
+  $('#tRefresh').onclick=loadRoster;
+  el.querySelectorAll('[data-area]').forEach(b=>b.onclick=()=>{TEACH.area=b.dataset.area;paintTeacher();});
+  $('#tSort').onchange=e=>{TEACH.sort=e.target.value;paintTeacher();};
+  el.querySelectorAll('tr[data-e]').forEach(tr=>{const go=()=>{TEACH.sel=TEACH.sel===tr.dataset.e?null:tr.dataset.e;paintTeacher();const d=$('#tDetail');if(d)d.scrollIntoView({behavior:'smooth',block:'start'});};tr.onclick=go;tr.onkeydown=e=>{if(e.key==='Enter')go();};});
+}
+
 /* ---------- router ---------- */
 const VIEWS={start:[renderStart],chassis:[renderChassis,wireChassis],drivetrain:[renderDrivetrain,wireDrivetrain],intake:[renderIntake,wireIntake],shooter:[renderShooter,wireShooter],autonomous:[renderAutonomous,wireAutonomous],starts:[renderStarts,wireStarts],vision:[renderVision,wireVision],apriltags:[renderAprilTags,wireAprilTags]};
 function route(){
   if(AT.raf){cancelAnimationFrame(AT.raf);AT.raf=0;}
-  let id=(location.hash||'#start').slice(1);if(!VIEWS[id])id='start';
+  let id=(location.hash||'#start').slice(1);
+  if(id==='teacher'){renderRail(id);const main=$('#main');main.innerHTML=renderTeacher();paintTeacher();if(ME.isTeacher&&!TEACH.rows)loadRoster();window.scrollTo(0,0);return;}
+  if(!VIEWS[id])id='start';
   renderRail(id);const m=MODS.find(x=>x.id===id),main=$('#main');
   main.style.setProperty('--gc',GROUPS[m.g][1]);
   main.innerHTML=VIEWS[id][0](m);
   if(VIEWS[id][1])VIEWS[id][1]();
-  wireCards(main);wireQuiz(main,id);paintDone(id);window.scrollTo(0,0);
+  wireCards(main);wireQuiz(main,id);paintDone(id);renderBtn($('#gbtn2'));window.scrollTo(0,0);
 }
 window.addEventListener('hashchange',route);
 try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',route);}catch(e){}
 route();
+initGoogle();
 </script>
 </body>
 </html>

@@ -17,7 +17,14 @@ Interactive tutorials for FIRST Tech Challenge students, in a single web page.
 | 07 | Computer Vision | Camera exposure tuner |
 | 08 | AprilTags | Range / bearing / yaw explorer with drive-to-tag |
 
-Each module ends with a short quiz. Progress is saved in the student's browser (no accounts, no data collected).
+Each module ends with a short quiz. Progress is saved in the student's browser.
+
+## Class progress tracking (optional)
+
+Teachers can turn on **Sign in with Google**. Each student's progress then saves to a Google Sheet
+the teacher owns, and a **Class dashboard** on the site shows who has finished what. Setup is a one-time,
+roughly 15-minute task: see [SETUP.md](SETUP.md). The backend is a short Google Apps Script in
+[`apps-script/Code.gs`](apps-script/Code.gs). No servers or paid services.
 
 ## Notes
 
