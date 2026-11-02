@@ -1,0 +1,835 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Robot Systems Lab</title>
+<meta name="description" content="Interactive FIRST Tech Challenge tutorials: chassis, drivetrain, intake, shooter, autonomous, computer vision, AprilTags, and alliance starting positions.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: pit-area workbench. Left rail = robot subsystems in build order; right = one module, built on a 12 ft foam-tile field motif. */
+:root{
+  --bg:#ECEEF0; --surface:#FFFFFF; --sunk:#F5F6F7; --ink:#14181D; --muted:#56606B; --line:#D4D9DE;
+  --tile:#C7CDD3; --tile-seam:#B3BAC2;
+  --tape:#F0A800; --tape-ink:#8A5C00; --pollen:#F5C518;
+  --blue:#1D5DBD; --red:#C4352C; --good:#1E7F4F; --bad:#B3261E; --violet:#6B4FC8;
+  --display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+  --body:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+  --r:8px; color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#101316; --surface:#191D22; --sunk:#14181C; --ink:#E6E9ED; --muted:#9AA4AF; --line:#2B3239;
+  --tile:#262C33; --tile-seam:#323A42; --tape:#F5B62B; --tape-ink:#F7C657;
+  --blue:#5B92E8; --red:#EC6A5F; --good:#4CC38A; --bad:#F2766B; --violet:#9C86F0; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#101316; --surface:#191D22; --sunk:#14181C; --ink:#E6E9ED; --muted:#9AA4AF; --line:#2B3239;
+  --tile:#262C33; --tile-seam:#323A42; --tape:#F5B62B; --tape-ink:#F7C657;
+  --blue:#5B92E8; --red:#EC6A5F; --good:#4CC38A; --bad:#F2766B; --violet:#9C86F0; color-scheme:dark}
+
+*{box-sizing:border-box}
+html,body{background:var(--bg);margin:0}
+body{color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55;padding-top:env(safe-area-inset-top,0px)}
+img{max-width:100%}
+[hidden]{display:none!important}
+a{color:var(--blue)}
+button,select,input{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--tape);outline-offset:2px}
+h1,h2,h3{font-family:var(--display);line-height:1.05;text-wrap:balance;margin:0}
+h1{font-size:clamp(2.2rem,5vw,3.4rem);font-weight:800;text-transform:uppercase}
+h2{font-size:1.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.02em}
+h3{font-size:1.2rem;font-weight:700;text-transform:uppercase;letter-spacing:.03em}
+p{margin:0}
+.eyebrow{font-family:var(--mono);font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+
+.top{position:sticky;top:0;z-index:5;background:var(--ink);color:var(--bg);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:10px}
+.top-in{max-width:1240px;margin:0 auto;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.brand{font-family:var(--display);font-weight:800;font-size:1.35rem;text-transform:uppercase;letter-spacing:.04em;display:flex;align-items:center;gap:10px}
+.brand i{width:14px;height:14px;border:3px solid var(--tape);display:inline-block}
+.brand small{font-family:var(--mono);font-size:.7rem;font-weight:500;opacity:.7;letter-spacing:.1em}
+.prog{margin-left:auto;display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:.8rem}
+.prog-bar{width:140px;height:8px;background:rgba(127,127,127,.35);border-radius:4px;overflow:hidden}
+.prog-bar b{display:block;height:100%;background:var(--tape);width:0;transition:width .4s}
+
+.shell{max-width:1240px;margin:0 auto;display:grid;grid-template-columns:250px minmax(0,1fr);gap:28px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px 64px}
+nav.rail{position:sticky;top:64px;align-self:start;display:flex;flex-direction:column;gap:18px}
+.rail-group{display:flex;flex-direction:column;gap:2px}
+.rail-group .eyebrow{padding:0 10px 6px;display:flex;align-items:center;gap:8px}
+.rail-group .eyebrow::before{content:"";width:10px;height:4px;background:var(--gc,var(--muted))}
+.rail a{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:6px;text-decoration:none;color:var(--ink);font-size:.95rem}
+.rail a:hover{background:var(--surface)}
+.rail a[aria-current="page"]{background:var(--surface);box-shadow:inset 3px 0 0 var(--gc,var(--tape));font-weight:700}
+.rail .num{font-family:var(--mono);font-size:.75rem;width:24px;color:var(--muted);flex:none}
+.rail .chk{margin-left:auto;width:16px;height:16px;border-radius:50%;border:2px solid var(--line);flex:none}
+.rail .chk.on{background:var(--good);border-color:var(--good)}
+@media (max-width:860px){
+  .shell{grid-template-columns:minmax(0,1fr)}
+  nav.rail{position:static;flex-direction:row;overflow-x:auto;gap:14px;padding-bottom:6px}
+  .rail-group{flex-direction:row;align-items:center;flex:none}
+  .rail-group .eyebrow{display:none}
+  .rail a{white-space:nowrap;background:var(--surface);border:1px solid var(--line)}
+}
+
+main{min-width:0;display:flex;flex-direction:column;gap:22px}
+.hero{display:grid;grid-template-columns:minmax(0,1fr) 230px;gap:24px;align-items:end;padding-bottom:18px;border-bottom:3px solid var(--ink)}
+.hero .lede{font-size:1.1rem;max-width:62ch;margin-top:10px}
+.hero .eyebrow{color:var(--gc,var(--muted));font-weight:700}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.stats div{background:var(--surface);padding:10px 12px}
+.stats b{display:block;font-family:var(--display);font-size:1.4rem;line-height:1}
+.stats span{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-family:var(--mono)}
+@media (max-width:640px){.hero{grid-template-columns:1fr}}
+
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:22px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.panel > header{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.panel > header .eyebrow{margin-left:auto}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:22px}
+.cols > *{min-width:0}
+ul.list{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:6px}
+ul.list li::marker{color:var(--tape)}
+.note{background:var(--sunk);border-left:4px solid var(--tape);padding:12px 14px;border-radius:0 6px 6px 0;font-size:.95rem}
+.quote{font-family:var(--display);font-size:1.6rem;font-weight:700;text-transform:uppercase;line-height:1.1;color:var(--gc,var(--ink))}
+.why{font-size:.88rem;color:var(--muted)}
+.tbl-wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.95rem}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:500}
+.code{font-family:var(--mono);font-size:.8rem;background:var(--ink);color:var(--bg);padding:12px 14px;border-radius:6px;overflow-x:auto;white-space:pre;line-height:1.55;margin:0}
+.code .c{color:var(--tape)}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border-radius:6px;border:2px solid var(--ink);background:var(--ink);color:var(--bg);font-weight:700;cursor:pointer;font-family:var(--display);font-size:1.05rem;text-transform:uppercase;letter-spacing:.05em;text-decoration:none}
+.btn.ghost{background:transparent;color:var(--ink)}
+.btn.tape{background:var(--tape);border-color:var(--tape);color:#1a1300}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.seg{display:inline-flex;border:1.5px solid var(--ink);border-radius:6px;overflow:hidden;flex-wrap:wrap}
+.seg button{padding:7px 12px;background:transparent;border:0;cursor:pointer;font-size:.88rem;font-weight:700}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.seg.red button[aria-pressed="true"]{background:var(--red);color:#fff}
+.seg.blue button[aria-pressed="true"]{background:var(--blue);color:#fff}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line);background:var(--sunk);border-radius:999px;padding:6px 12px;cursor:pointer;font-size:.86rem}
+.chip:hover{border-color:var(--ink)}
+.pill{font-family:var(--mono);font-size:.75rem;padding:4px 10px;border-radius:999px;border:1px solid var(--line)}
+.pill.ok{background:var(--good);color:#fff;border-color:var(--good)}
+.pill.bad{background:var(--bad);color:#fff;border-color:var(--bad)}
+
+/* quiz */
+.q{display:flex;flex-direction:column;gap:8px;padding:14px 0;border-top:1px solid var(--line)}
+.q:first-of-type{border-top:0;padding-top:0}
+.q p{font-weight:700}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:6px}
+.opt{text-align:left;padding:10px 12px;border:1.5px solid var(--line);border-radius:6px;background:var(--surface);cursor:pointer;font-size:.93rem}
+.opt:hover{border-color:var(--ink)}
+.opt.right{border-color:var(--good);background:color-mix(in srgb,var(--good) 12%,var(--surface))}
+.opt.wrong{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 10%,var(--surface))}
+.quiz-foot{display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-family:var(--mono);font-size:.85rem}
+
+/* flashcards */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px}
+.card{perspective:800px;min-height:150px;cursor:pointer;border:0;background:none;padding:0;text-align:left}
+.card-in{position:relative;width:100%;height:100%;min-height:150px;transition:transform .45s;transform-style:preserve-3d}
+.card.flip .card-in{transform:rotateY(180deg)}
+.card-face{position:absolute;inset:0;backface-visibility:hidden;border-radius:var(--r);padding:14px;display:flex;flex-direction:column;justify-content:space-between;border:1px solid var(--line)}
+.card-front{background:var(--sunk)}
+.card-front b{font-family:var(--display);font-size:1.4rem;text-transform:uppercase;line-height:1}
+.card-back{background:var(--ink);color:var(--bg);transform:rotateY(180deg);font-size:.86rem;overflow:auto}
+.card .hint{font-family:var(--mono);font-size:.7rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+@media (prefers-reduced-motion:reduce){.card-in{transition:none}}
+
+/* tools */
+.tool{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:22px;align-items:start}
+@media (max-width:820px){.tool{grid-template-columns:1fr}}
+.ctrls{display:flex;flex-direction:column;gap:10px;min-width:0}
+.ctrl{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;align-items:center;padding:8px 10px;background:var(--sunk);border-radius:6px}
+.ctrl label{font-size:.9rem}
+.ctrl output{font-family:var(--mono);font-weight:700;font-variant-numeric:tabular-nums}
+.ctrl input[type=range]{grid-column:1/-1;width:100%;accent-color:var(--tape)}
+.ctrl select{padding:6px;border-radius:5px;border:1px solid var(--line);background:var(--surface)}
+.readout{background:var(--ink);color:var(--bg);border-radius:var(--r);padding:14px 16px;display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:12px}
+.readout div{display:flex;flex-direction:column;gap:2px}
+.readout b{font-family:var(--mono);font-size:1.5rem;color:var(--tape);font-variant-numeric:tabular-nums;line-height:1.1}
+.readout span{font-family:var(--mono);font-size:.68rem;opacity:.75;text-transform:uppercase;letter-spacing:.08em}
+canvas.view{width:100%;display:block;border-radius:6px;background:var(--tile);border:1px solid var(--line)}
+.status{font-family:var(--mono);font-size:.85rem;padding:8px 10px;border-radius:6px;background:var(--sunk)}
+.status.ok{background:color-mix(in srgb,var(--good) 16%,var(--surface))}
+.status.bad{background:color-mix(in srgb,var(--bad) 14%,var(--surface))}
+
+.mec{display:grid;grid-template-columns:minmax(0,300px) minmax(0,1fr);gap:22px;align-items:center}
+@media (max-width:640px){.mec{grid-template-columns:1fr}}
+.mec svg{width:100%;max-width:300px;height:auto}
+.mec .wheel{cursor:pointer}
+.mec-out{font-family:var(--display);font-size:1.6rem;text-transform:uppercase;line-height:1.1}
+
+.sort-item{display:flex;gap:12px;align-items:center;padding:10px 12px;background:var(--sunk);border-radius:6px;flex-wrap:wrap}
+.sort-item p{flex:1 1 240px;min-width:0}
+.sort-item select{padding:8px;border-radius:6px;border:1px solid var(--line);background:var(--surface)}
+.mark{font-family:var(--mono);font-size:.8rem;width:70px}
+.mark.ok{color:var(--good)} .mark.no{color:var(--bad)}
+.order{display:flex;flex-direction:column;gap:6px;counter-reset:o;margin:0;padding:0}
+.order li{list-style:none;display:flex;align-items:center;gap:10px;padding:8px 10px;background:var(--sunk);border-radius:6px;counter-increment:o}
+.order li::before{content:counter(o);font-family:var(--mono);font-weight:700;width:22px;color:var(--tape-ink)}
+.order li span{flex:1;min-width:0}
+.order button{width:30px;height:30px;border:1px solid var(--line);background:var(--surface);border-radius:5px;cursor:pointer}
+.prog-list{display:flex;flex-direction:column;gap:6px;margin:0;padding:0}
+.prog-list li{list-style:none;display:flex;align-items:center;gap:8px;padding:6px 8px;background:var(--sunk);border-radius:6px;flex-wrap:wrap}
+.prog-list select,.prog-list input{padding:6px;border-radius:5px;border:1px solid var(--line);background:var(--surface);font-family:var(--mono);font-size:.88rem}
+.prog-list input{width:76px}
+.prog-list .x{margin-left:auto;border:0;background:none;cursor:pointer;color:var(--muted);font-size:1.1rem}
+.path{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.path a{display:flex;flex-direction:column;gap:4px;text-decoration:none;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--gc);border-radius:0 0 var(--r) var(--r);padding:14px}
+.path a b{font-family:var(--display);font-size:1.3rem;text-transform:uppercase}
+.path a span{font-size:.88rem;color:var(--muted)}
+.done-bar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:space-between;border-top:3px solid var(--ink);padding-top:18px}
+footer.foot{max-width:1240px;margin:0 auto;padding:0 max(16px,env(safe-area-inset-right,0px)) 40px max(16px,env(safe-area-inset-left,0px));font-size:.8rem;color:var(--muted)}
+</style>
+</head>
+<body>
+<header class="top"><div class="top-in">
+  <div class="brand"><i aria-hidden="true"></i>Robot Systems Lab <small>FTC · 2026–27</small></div>
+  <div class="prog"><span id="progTxt"></span><div class="prog-bar"><b id="progBar"></b></div></div>
+</div></header>
+<div class="shell">
+  <nav class="rail" id="rail" aria-label="Modules"></nav>
+  <main id="main"></main>
+</div>
+<footer class="foot">Built for FIRST Tech Challenge students. Not an official FIRST resource. Always check the current season’s Game Manual for field layouts, starting tiles, and AprilTag IDs. Progress is saved in this browser only.</footer>
+
+<script>
+/* ---------- storage (this browser only) ---------- */
+const KEY='robot-systems-lab-v1';
+let S={done:{},quiz:{}};
+try{const raw=localStorage.getItem(KEY);if(raw)S=Object.assign(S,JSON.parse(raw));}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+const $=(s,r=document)=>r.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+function hidpi(cv,w,h){const d=Math.min(2,window.devicePixelRatio||1);cv.width=w*d;cv.height=h*d;const g=cv.getContext('2d');g.setTransform(d,0,0,d,0,0);return g;}
+
+/* ---------- modules ---------- */
+const GROUPS={start:['Start here','var(--tape)'],build:['Build','var(--blue)'],score:['Score','var(--tape-ink)'],auto:['Autonomous','var(--red)'],see:['Vision','var(--violet)']};
+const MODS=[
+ {id:'start',g:'start',num:'00',title:'Welcome'},
+ {id:'chassis',g:'build',num:'01',title:'Chassis'},
+ {id:'drivetrain',g:'build',num:'02',title:'Drivetrain'},
+ {id:'intake',g:'score',num:'03',title:'Intake'},
+ {id:'shooter',g:'score',num:'04',title:'Shooter'},
+ {id:'autonomous',g:'auto',num:'05',title:'Autonomous'},
+ {id:'starts',g:'auto',num:'06',title:'Starting Positions'},
+ {id:'vision',g:'see',num:'07',title:'Computer Vision'},
+ {id:'apriltags',g:'see',num:'08',title:'AprilTags'}
+];
+const TRACKED=MODS.filter(m=>m.id!=='start');
+
+/* ---------- quizzes ---------- */
+const QUIZ={
+chassis:[
+ ['At the start of a match, an FTC robot must fit inside a…',['12 in cube','18 in cube','24 in cube','Any size'],1,'The standard starting size limit is 18 × 18 × 18 in. Check this season’s Game Manual for exact rules.'],
+ ['Why keep heavy parts (battery, motors) low and centered?',['It looks better','A low center of gravity keeps the robot from tipping','It makes wiring longer','It increases top speed'],1,'Low, centered mass keeps the robot stable during fast turns and collisions.'],
+ ['Which material should you avoid for structural or impact parts?',['Aluminum channel','Polycarbonate','Acrylic','Steel shafts'],2,'Acrylic can shatter on impact.']],
+drivetrain:[
+ ['A drivetrain that can strafe sideways without turning is…',['Tank','Holonomic (like mecanum)','Skid-steer','Drop-center'],1,'Mecanum is the most common holonomic drive in FTC.'],
+ ['Seen from above, mecanum rollers should form…',['A square','An X','Parallel lines','An arrow'],1,'Rollers form an X; left and right wheels sit on opposite corners.'],
+ ['A bigger wheel with the same motor and gearing makes the robot…',['Slower','Faster but with less pushing force','Faster and stronger','No change'],1,'Speed scales with wheel circumference, but torque at the floor goes down.'],
+ ['In field-centric driving, pushing the stick “up” moves the robot…',['Toward the robot’s front','Away from the driver, no matter which way the robot faces','Always left','In a circle'],1,'The IMU heading is used to rotate stick input into field directions.']],
+intake:[
+ ['What is the design goal for any intake?',['Fast and loud','Touch it, own it','Bigger is better','Spin to win'],1,'Once the intake touches a game piece, it should control it.'],
+ ['A lower durometer compliant wheel is…',['Harder','Squishier','Heavier','Smaller'],1,'Lower durometer = squishier = more grip and compliance.'],
+ ['Why retract the intake inside the frame when not in use?',['To score more','To reduce damage and penalty risk','To save battery','It is required for every game'],1,'An extended intake is the first thing to get hit.']],
+shooter:[
+ ['Why use setVelocity() instead of setPower() for a flywheel?',['It is shorter to type','It holds RPM steady as the battery drains and after each shot','It makes the motor louder','setPower() does not exist'],1,'Velocity control uses the encoder to keep the wheel at target speed.'],
+ ['What is “compression” in a shooter?',['Air pressure in the ball','How much the game piece is squeezed between the wheel and hood','Motor gearing','Battery voltage'],1,'More compression means more grip and energy transfer, up to a point.'],
+ ['Shots are falling short. Which is the best first fix?',['Raise flywheel velocity a little, or adjust the hood angle','Add more weight','Drive faster','Turn off the encoder'],0,'Tune one variable at a time: speed or angle.'],
+ ['Why wait for “at speed” before feeding the next piece?',['To look cool','The wheel slows after each shot; feeding early makes shots fall short','The rules require it','To save the battery'],1,'Recovery time matters for consistent multi-piece shooting.']],
+autonomous:[
+ ['Why do teams switch from time-based to encoder-based driving?',['It is faster','Distance stays the same as the battery drains','It needs no code','It uses fewer motors'],1,'Encoders measure rotation, so moves repeat reliably.'],
+ ['What do odometry pods (dead wheels) do?',['Push other robots','Track the robot’s field position even when drive wheels slip','Pick up game pieces','Charge the battery'],1,'Unpowered tracking wheels with encoders measure actual motion.'],
+ ['What is a state machine good for in autonomous?',['Running steps one after another while still checking sensors each loop','Making the robot faster','Replacing motors','Choosing team colors'],0,'Each loop checks the current state and moves to the next when it is done.'],
+ ['Your path is off. Best debugging move?',['Rewrite everything','Change one value and test again','Raise the power to 100%','Add random waits'],1,'One change at a time shows what actually helped.']],
+starts:[
+ ['You wrote a path for Blue. On Red (mirrored field), what changes?',['Nothing','Turn directions flip; distances stay the same','Distances double','The robot drives backward'],1,'Mirroring swaps left and right. Flip the sign of turns (and strafes).'],
+ ['When should drivers select alliance and starting position?',['During TeleOp','During INIT, before pressing Start','After the match','It cannot be changed'],1,'Use an INIT loop with gamepad buttons and show the choice on telemetry.'],
+ ['Why write one path and mirror it instead of four separate paths?',['Less code to test and fix','It is required','Robots prefer it','It runs faster'],0,'One source of truth means a fix applies to every start.'],
+ ['What should the drive team check right before Start?',['The telemetry shows the correct alliance and position','The robot is painted','The battery is warm','Nothing'],0,'The most common autonomous failure is the wrong selection.']],
+vision:[
+ ['In the FTC SDK, what manages the camera and runs vision processors?',['VisionPortal','HardwareMap','Telemetry','IMU'],0,'VisionPortal opens the webcam and feeds frames to processors like AprilTag.'],
+ ['Why lower camera exposure for AprilTags on a moving robot?',['Brighter image','Less motion blur, so tags detect reliably','Saves battery','Required by rules'],1,'Short exposure (and higher gain) reduces blur.'],
+ ['Higher camera resolution usually means…',['Longer detection range but slower frame rate','Always better everything','No change','Shorter range'],0,'More pixels help small, far tags but cost processing time.']],
+apriltags:[
+ ['ftcPose.range is…',['The tag’s ID','Distance from the camera to the tag center','The robot’s speed','The tag size'],1,'Range is the straight-line distance, in the units you configure (inches by default).'],
+ ['A positive ftcPose.bearing means the tag is…',['To the left of the camera’s center line','To the right','Behind the robot','Upside down'],0,'In the FTC SDK, positive bearing is counter-clockwise (left).'],
+ ['To drive to a tag with a tank drive, which values do you use?',['Range error to drive, bearing to turn','Tag ID only','Yaw only','Battery voltage'],0,'Drive forward on range error and turn to zero the bearing.'],
+ ['Why does detection.metadata come back null?',['The tag is not in the loaded tag library','The camera is broken','The tag is too close','Range is zero'],0,'Only tags in the library have size and field-position metadata.']]
+};
+
+/* ---------- shared components ---------- */
+function quizHTML(id){
+  const qs=QUIZ[id];if(!qs)return'';
+  let h=`<section class="panel" data-quiz="${id}"><header><h2>Check your understanding</h2><span class="eyebrow">${qs.length} questions</span></header>`;
+  qs.forEach((q,i)=>{h+=`<div class="q" data-i="${i}"><p>${i+1}. ${esc(q[0])}</p><div class="opts">${q[1].map((o,j)=>`<button class="opt" type="button" data-j="${j}">${esc(o)}</button>`).join('')}</div><p class="why" hidden></p></div>`;});
+  return h+`<div class="quiz-foot"><span class="qscore"></span><button class="btn ghost qreset" type="button">Reset quiz</button></div></section>`;
+}
+function wireQuiz(root,id){
+  const box=root.querySelector(`[data-quiz="${id}"]`);if(!box)return;const qs=QUIZ[id];S.quiz[id]=S.quiz[id]||{};
+  function paint(){let right=0,n=0;
+    box.querySelectorAll('.q').forEach(qe=>{const i=+qe.dataset.i,pick=S.quiz[id][i],q=qs[i];
+      qe.querySelectorAll('.opt').forEach(b=>{const j=+b.dataset.j;b.classList.remove('right','wrong');if(pick!==undefined){if(j===q[2])b.classList.add('right');else if(j===pick)b.classList.add('wrong');}});
+      const w=qe.querySelector('.why');if(pick!==undefined){n++;if(pick===q[2])right++;w.hidden=false;w.textContent=(pick===q[2]?'Correct. ':'Not quite. ')+q[3];}else w.hidden=true;});
+    box.querySelector('.qscore').innerHTML=n===qs.length?(right===qs.length?`<span class="pill ok">${right}/${qs.length} · module complete</span>`:`${right}/${qs.length} correct. Reset and try again to complete the module.`):`${n}/${qs.length} answered`;
+    if(n===qs.length&&right===qs.length&&!S.done[id]){S.done[id]=true;save();renderRail(id);paintDone(id);}}
+  box.addEventListener('click',e=>{const b=e.target.closest('.opt');if(b){const i=+b.closest('.q').dataset.i;if(S.quiz[id][i]===undefined){S.quiz[id][i]=+b.dataset.j;save();paint();}}if(e.target.closest('.qreset')){S.quiz[id]={};save();paint();}});
+  paint();
+}
+const cardsHTML=list=>`<div class="cards">${list.map(c=>`<button class="card" type="button" aria-label="${esc(c[0])}: flip card"><div class="card-in"><div class="card-face card-front"><b>${esc(c[0])}</b><span class="hint">Tap to flip</span></div><div class="card-face card-back">${esc(c[1])}</div></div></button>`).join('')}</div>`;
+function wireCards(root){root.querySelectorAll('.card').forEach(c=>c.addEventListener('click',()=>c.classList.toggle('flip')));}
+const listHTML=a=>`<ul class="list">${a.map(x=>`<li>${x}</li>`).join('')}</ul>`;
+const codeHTML=s=>`<pre class="code">${esc(s).replace(/(\/\/[^\n]*)/g,'<span class="c">$1</span>')}</pre>`;
+function hero(m,lede,stats){const g=GROUPS[m.g];return `<section class="hero"><div><span class="eyebrow">Module ${m.num} · ${g[0]}</span><h1>${esc(m.title)}</h1><p class="lede">${lede}</p></div><div class="stats">${stats.map((s,i)=>`<div ${stats.length%2&&i===stats.length-1?'style="grid-column:1/-1"':''}><b>${s[0]}</b><span>${s[1]}</span></div>`).join('')}</div></section>`;}
+function doneHTML(){return `<div class="done-bar" id="donebar"></div>`;}
+function paintDone(id){
+  const el=$('#donebar');if(!el)return;const i=MODS.findIndex(m=>m.id===id),next=MODS[i+1];
+  el.innerHTML=`<div class="btn-row">${S.done[id]?`<span class="pill ok">Complete</span><button class="btn ghost" id="undone" type="button">Mark not complete</button>`:`<button class="btn" id="markdone" type="button">Mark complete</button><span class="why">Or answer every quiz question correctly.</span>`}</div>${next?`<a class="btn tape" href="#${next.id}">Next: ${esc(next.title)} →</a>`:''}`;
+  const md=$('#markdone');if(md)md.onclick=()=>{S.done[id]=true;save();renderRail(id);paintDone(id);};
+  const ud=$('#undone');if(ud)ud.onclick=()=>{delete S.done[id];save();renderRail(id);paintDone(id);};
+}
+function renderRail(cur){
+  let h='';
+  for(const g of Object.keys(GROUPS)){
+    h+=`<div class="rail-group" style="--gc:${GROUPS[g][1]}"><span class="eyebrow">${GROUPS[g][0]}</span>`;
+    for(const m of MODS.filter(x=>x.g===g))h+=`<a href="#${m.id}" ${m.id===cur?'aria-current="page"':''}><span class="num">${m.num}</span>${esc(m.title)}${m.id==='start'?'':`<span class="chk ${S.done[m.id]?'on':''}"></span>`}</a>`;
+    h+='</div>';
+  }
+  $('#rail').innerHTML=h;
+  const n=TRACKED.filter(m=>S.done[m.id]).length;
+  $('#progTxt').textContent=`${n} / ${TRACKED.length} complete`;$('#progBar').style.width=(n/TRACKED.length*100)+'%';
+}
+
+/* ---------- 00 welcome ---------- */
+const BLURB={chassis:'Frame, size limits, center of gravity, materials.',drivetrain:'Tank vs. mecanum, speed math, field-centric driving.',intake:'“Touch it, own it.” Intake types and materials.',shooter:'Flywheels, velocity control, and a trajectory tool.',autonomous:'Encoders, odometry, and state machines.',starts:'Red vs. Blue, Position 1 vs. 2, mirroring one path.',vision:'VisionPortal, camera setup, and processors.',apriltags:'Range, bearing, yaw, and driving to a tag.'};
+function renderStart(){
+  return `<section class="hero"><div><span class="eyebrow">FIRST Tech Challenge · Robot Systems</span><h1>Every subsystem, one lab.</h1><p class="lede">Eight hands-on modules that take you from bare chassis to a robot that shoots, sees AprilTags, and runs autonomous from any starting tile on either alliance.</p></div>
+  <div class="stats"><div><b>8</b><span>Modules</span></div><div><b>5</b><span>Interactive tools</span></div><div><b>18 in</b><span>Start cube</span></div><div><b>12 ft</b><span>Field</span></div></div></section>
+  <section class="panel"><header><h2>Modules</h2><span class="eyebrow">Work in order, or jump in</span></header><div class="path">${TRACKED.map(m=>`<a href="#${m.id}" style="--gc:${GROUPS[m.g][1]}"><span class="eyebrow">${m.num} · ${GROUPS[m.g][0]}</span><b>${esc(m.title)}</b><span>${BLURB[m.id]}</span></a>`).join('')}</div></section>
+  <section class="panel"><header><h2>How to use this lab</h2></header>${listHTML(['Read each module, try the interactive tool, then take the quiz. A perfect quiz score marks the module complete.','Progress saves in this browser only. Use the same computer and browser to keep it.','Code samples use the FTC SDK in Java. Blocks users will find the same ideas in the matching blocks.','Field drawings are generic examples. This season’s Game Manual is the authority on starting tiles, goals, and AprilTag IDs.'])}
+  <p class="why">Helpful references: <a href="https://ftc-docs.firstinspires.org" target="_blank" rel="noopener">FTC Docs</a> (SDK, VisionPortal, AprilTags) and <a href="https://gm0.org" target="_blank" rel="noopener">Game Manual 0</a> (robot design).</p></section>`;
+}
+
+/* ---------- 01 chassis ---------- */
+function renderChassis(m){
+  return hero(m,'Everything on the robot attaches to the chassis. Get the frame right and every other subsystem gets easier.',[['18 in','Start cube'],['Low','Center of gravity'],['Square','Frame check']])+
+  `<section class="panel"><header><h2>Key terms</h2><span class="eyebrow">Tap to flip</span></header>${cardsHTML([
+   ['Chassis','The main structure of the robot (also called the frame). Holds the drivetrain, electronics, and mechanisms.'],
+   ['Frame perimeter','The outline of the chassis. Mechanisms that reach outside it need a plan for the starting size and for collisions.'],
+   ['Center of gravity','The balance point of the robot. Low and centered means stable; high or off-center means tipping and drift.'],
+   ['Channel vs. extrusion','U-channel (goBILDA, REV Channel) bolts together fast with a hole pattern. Extrusion (REV 15mm) slides parts anywhere along a slot.'],
+   ['Standoffs & spacers','Hold plates apart at exact distances so shafts line up and nothing rubs.'],
+   ['Wire management','Zip ties, cable tracks, and labeled connectors. Most “mechanical” failures at events are actually loose wires.']])}</section>
+  <section class="panel"><header><h2>Design checklist</h2></header><div class="cols">
+   <div><h3>Size & shape</h3>${listHTML(['The robot must fit in the starting size limit (traditionally an 18 × 18 × 18 in cube). Check this season’s Game Manual.','Max size gives room for mechanisms but is harder to maneuver.','Leave open space where game pieces need to travel (intake → storage → shooter).'])}</div>
+   <div><h3>Strength & stability</h3>${listHTML(['Keep the battery, Control Hub, and motors low and centered.','Check that the frame is square: measure both diagonals; they should match.','Use polycarbonate, aluminum, or 3D prints. Never acrylic: it shatters.','Use thread locker or nylock nuts on anything that vibrates.'])}</div>
+   <div><h3>Serviceability</h3>${listHTML(['Can you swap the battery in under 10 seconds?','Can you reach the Control Hub ports without taking parts off?','Label every motor and servo port to match your configuration names.'])}</div></div></section>
+  <section class="panel"><header><h2>Tip-over tester</h2><span class="eyebrow">Center of gravity</span></header><div class="tool">
+   <div class="ctrls">
+    <div class="ctrl"><label for="cgH">Center of gravity height</label><output id="cgHo"></output><input type="range" id="cgH" min="2" max="16" step=".5" value="5"></div>
+    <div class="ctrl"><label for="cgW">Wheel track width</label><output id="cgWo"></output><input type="range" id="cgW" min="10" max="18" step=".5" value="15"></div>
+    <div class="ctrl"><label for="cgA">Braking / turning acceleration</label><output id="cgAo"></output><input type="range" id="cgA" min="0.1" max="1.2" step=".05" value="0.5"></div>
+    <p class="why">A robot tips when sideways acceleration (in g) is greater than half the track width divided by the CG height. This is a simplified model; real robots also flex and bounce.</p></div>
+   <div><canvas class="view" id="cgCv" aria-label="Side view of robot showing tip angle"></canvas><div class="status" id="cgS" style="margin-top:10px"></div></div></div></section>
+  ${quizHTML('chassis')}${doneHTML()}`;
+}
+function wireChassis(){
+  const cv=$('#cgCv'),W=420,H=240;const g=hidpi(cv,W,H);cv.style.aspectRatio=W+'/'+H;
+  const upd=()=>{
+    const h=+$('#cgH').value,w=+$('#cgW').value,a=+$('#cgA').value;$('#cgHo').textContent=h+' in';$('#cgWo').textContent=w+' in';$('#cgAo').textContent=a.toFixed(2)+' g';
+    const lim=(w/2)/h,tips=a>lim;
+    g.clearRect(0,0,W,H);g.fillStyle=css('--tile');g.fillRect(0,0,W,H);
+    const k=10,gx=W/2,gy=H-30;g.strokeStyle=css('--muted');g.lineWidth=2;g.beginPath();g.moveTo(0,gy);g.lineTo(W,gy);g.stroke();
+    const tilt=tips?-Math.min(.5,(a-lim)*.8+.12):0;
+    g.save();g.translate(gx+(w*k/2),gy);g.rotate(tilt);g.translate(-(w*k/2),0);
+    g.fillStyle=css('--surface');g.strokeStyle=css('--ink');g.lineWidth=2;g.fillRect(-w*k/2,-170,w*k,150);g.strokeRect(-w*k/2,-170,w*k,150);
+    g.fillStyle=css('--ink');[-w*k/2+14,w*k/2-14].forEach(x=>{g.beginPath();g.arc(x,-12,12,0,7);g.fill();});
+    g.fillStyle=tips?css('--bad'):css('--good');g.beginPath();g.arc(0,-h*k,9,0,7);g.fill();
+    g.fillStyle=css('--ink');g.font='12px JetBrains Mono, monospace';g.fillText('CG',14,-h*k+4);g.restore();
+    const s=$('#cgS');s.className='status '+(tips?'bad':'ok');s.textContent=tips?`Tips over! Limit is ${lim.toFixed(2)} g. Lower the CG or widen the track.`:`Stable. It would tip above ${lim.toFixed(2)} g (${(lim/a).toFixed(1)}× margin).`;
+  };
+  ['cgH','cgW','cgA'].forEach(i=>$('#'+i).addEventListener('input',upd));upd();
+}
+
+/* ---------- 02 drivetrain ---------- */
+function renderDrivetrain(m){
+  return hero(m,'Tank or mecanum, the drivetrain decides how your robot moves around the field. Learn the trade-offs, the math, and how to drive field-centric.',[['2','Main types'],['4','Mecanum motors'],['ft/s','Speed calc']])+
+  `<section class="panel"><header><h2>Tank vs. mecanum</h2></header><div class="tbl-wrap"><table><thead><tr><th></th><th>Tank (skid-steer)</th><th>Mecanum (holonomic)</th></tr></thead><tbody>
+   <tr><td><b>Moves</b></td><td>Forward, back, turn in place</td><td>Any direction, including sideways (strafe), while turning</td></tr>
+   <tr><td><b>Pros</b></td><td>Simple, reliable, strong pushing power, easy to program</td><td>Precise alignment, tight spaces, approach goals from any angle</td></tr>
+   <tr><td><b>Cons</b></td><td>Can’t strafe; wheel scrub on turns (use omni or drop-center wheels)</td><td>4 independent motors, harder to program, less pushing power, needs tuning to avoid drift</td></tr></tbody></table></div></section>
+  <section class="panel"><header><h2>Mecanum explorer</h2><span class="eyebrow">Tap a wheel to change its spin</span></header>
+   <div class="mec"><div id="mecSvg"></div><div style="display:flex;flex-direction:column;gap:12px;min-width:0">
+    <p>Each wheel cycles <b>forward → backward → off</b>. Can you make the robot strafe right?</p>
+    <div class="chips" id="mecPresets"><button class="chip" type="button" data-p="1,1,1,1">Forward</button><button class="chip" type="button" data-p="1,-1,-1,1">Strafe right</button><button class="chip" type="button" data-p="-1,1,1,-1">Strafe left</button><button class="chip" type="button" data-p="1,-1,1,-1">Rotate CW</button><button class="chip" type="button" data-p="1,0,0,1">Diagonal</button><button class="chip" type="button" data-p="0,0,0,0">Stop</button></div>
+    <div class="mec-out" id="mecOut"></div><p class="why" id="mecWhy"></p></div></div>
+   ${codeHTML(`// Robot-centric mecanum drive (TeleOp loop)
+double y  = -gamepad1.left_stick_y;   // forward
+double x  =  gamepad1.left_stick_x * 1.1; // strafe (1.1 corrects imperfect strafing)
+double rx =  gamepad1.right_stick_x;  // turn
+double d  = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
+frontLeft.setPower((y + x + rx) / d);
+backLeft.setPower((y - x + rx) / d);
+frontRight.setPower((y - x - rx) / d);
+backRight.setPower((y + x - rx) / d);`)}</section>
+  <section class="panel"><header><h2>Drive speed calculator</h2></header><div class="tool">
+   <div class="ctrls">
+    <div class="ctrl"><label for="dRpm">Motor output speed</label><output id="dRpmo"></output><input type="range" id="dRpm" min="84" max="1620" step="1" value="312"></div>
+    <div class="chips" id="rpmChips">${[117,223,312,435,1150].map(r=>`<button class="chip" type="button" data-r="${r}">${r} RPM</button>`).join('')}</div>
+    <div class="ctrl"><label for="dRatio">Extra gear ratio (motor : wheel)</label><output id="dRatioo"></output><input type="range" id="dRatio" min=".5" max="3" step=".25" value="1"></div>
+    <div class="ctrl"><label for="dWheel">Wheel diameter</label><output id="dWheelo"></output><input type="range" id="dWheel" min="72" max="140" step="1" value="104"></div>
+   </div>
+   <div><div class="readout"><div><b id="dFps">0</b><span>Theoretical ft/s</span></div><div><b id="dReal">0</b><span>Realistic ft/s (~80%)</span></div><div><b id="dCross">0</b><span>Sec to cross 12 ft</span></div></div>
+    <p class="why" style="margin-top:10px">Speed = RPM ÷ ratio × π × wheel diameter ÷ 60. Faster isn’t always better: too fast is hard to control and weak at pushing. Many teams like 4–6 ft/s real speed to start.</p></div></div></section>
+  <section class="panel"><header><h2>Field-centric driving</h2></header>
+   <p>Robot-centric: “stick up” means “robot’s front.” Field-centric: “stick up” always means “away from the driver,” no matter which way the robot faces. The IMU’s heading rotates the stick input.</p>
+   ${codeHTML(`double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+// rotate stick input by the opposite of the robot's heading
+double rotX = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
+double rotY = x * Math.sin(-botHeading) + y * Math.cos(-botHeading);
+// then use rotX / rotY in place of x / y in the mecanum math above
+if (gamepad1.options) imu.resetYaw(); // re-zero when the robot faces away from you`)}
+   <p class="why">Reset the yaw at the start of TeleOp (or carry the heading over from autonomous) so “away from the driver” is correct.</p></section>
+  ${quizHTML('drivetrain')}${doneHTML()}`;
+}
+const mec={w:[1,-1,-1,1]};
+function mecDraw(){
+  const [FL,FR,BL,BR]=mec.w,vy=FL+FR+BL+BR,vx=FL-FR-BL+BR,w=FL-FR+BL-BR;
+  const wheel=(x,y,st,slant,i)=>{const col=st===1?'var(--good)':st===-1?'var(--red)':'var(--muted)';let r='';
+    for(let k=-2;k<=2;k++){const yy=y+k*10;r+=`<line x1="${x-9}" y1="${yy+(slant?-7:7)}" x2="${x+9}" y2="${yy+(slant?7:-7)}" stroke="var(--surface)" stroke-width="2"/>`;}
+    const ax=x<150?x-26:x+26,up=st===1;
+    const ar=st?`<path d="M${ax} ${y+(up?14:-14)} L${ax} ${y+(up?-14:14)} M${ax-6} ${y+(up?-6:6)} L${ax} ${y+(up?-14:14)} L${ax+6} ${y+(up?-6:6)}" stroke="${col}" stroke-width="3" fill="none" stroke-linecap="round"/>`:'';
+    return `<g class="wheel" data-i="${i}" tabindex="0" role="button" aria-label="${['Front left','Front right','Back left','Back right'][i]} wheel: ${st===1?'forward':st===-1?'backward':'off'}"><rect x="${x-13}" y="${y-30}" width="26" height="60" rx="5" fill="${col}"/>${r}${ar}</g>`;};
+  const cx=150,cy=150;let s=`<svg viewBox="0 0 300 300" role="img" aria-label="Top view of mecanum robot"><rect x="70" y="70" width="160" height="160" rx="8" fill="var(--sunk)" stroke="var(--ink)" stroke-width="3"/><text x="150" y="62" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="11" fill="var(--muted)">FRONT</text>`;
+  s+=wheel(90,100,FL,true,0)+wheel(210,100,FR,false,1)+wheel(90,200,BL,false,2)+wheel(210,200,BR,true,3);
+  if(vx||vy){const L=Math.hypot(vx,vy),ux=vx/L,uy=-vy/L,len=26+L*7,ex=cx+ux*len,ey=cy+uy*len,a=Math.atan2(uy,ux);
+    s+=`<line x1="${cx}" y1="${cy}" x2="${ex}" y2="${ey}" stroke="var(--tape)" stroke-width="7" stroke-linecap="round"/><polygon points="${ex+Math.cos(a)*12},${ey+Math.sin(a)*12} ${ex+Math.cos(a+2.4)*12},${ey+Math.sin(a+2.4)*12} ${ex+Math.cos(a-2.4)*12},${ey+Math.sin(a-2.4)*12}" fill="var(--tape)"/>`;}
+  if(w)s+=`<g ${w>0?'':'transform="translate(300,0) scale(-1,1)"'}><path d="M${cx-34} ${cy-10} A36 36 0 1 1 ${cx-10} ${cy+34}" fill="none" stroke="var(--blue)" stroke-width="4"/><polygon points="${cx-10},${cy+26} ${cx-10},${cy+42} ${cx-22},${cy+34}" fill="var(--blue)"/></g>`;
+  $('#mecSvg').innerHTML=s+`<circle cx="${cx}" cy="${cy}" r="4" fill="var(--red)"/></svg>`;
+  const dirs=[];if(vy>0)dirs.push('forward');if(vy<0)dirs.push('backward');if(vx>0)dirs.push('right');if(vx<0)dirs.push('left');
+  let txt;if(!vx&&!vy&&!w)txt=mec.w.some(x=>x)?'Wheels fight. No motion.':'Robot is stopped';
+  else{const p=[];if(vx||vy)p.push(!vy?`Strafe ${dirs[0]}`:(!vx?`Drive ${dirs[0]}`:`Diagonal ${dirs.join('-')}`));if(w)p.push(`${p.length?'+ rotate':'Rotate'} ${w>0?'clockwise':'counter-clockwise'}`);txt=p.join(' ');}
+  $('#mecOut').textContent=txt;
+  $('#mecWhy').textContent=`Forward sum ${vy}, sideways sum ${vx}, turn sum ${w}. Strafing happens when wheels on the same side spin opposite ways: roller forces cancel front-to-back and add up sideways.`;
+  document.querySelectorAll('#mecSvg .wheel').forEach(g=>{const t=()=>{const i=+g.dataset.i;mec.w[i]=mec.w[i]===0?1:mec.w[i]===1?-1:0;mecDraw();};g.addEventListener('click',t);g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();t();}});});
+}
+function wireDrivetrain(){
+  mecDraw();document.querySelectorAll('#mecPresets .chip').forEach(b=>b.addEventListener('click',()=>{mec.w=b.dataset.p.split(',').map(Number);mecDraw();}));
+  const upd=()=>{const r=+$('#dRpm').value,q=+$('#dRatio').value,d=+$('#dWheel').value;$('#dRpmo').textContent=r+' RPM';$('#dRatioo').textContent=q+' : 1';$('#dWheelo').textContent=d+' mm ('+(d/25.4).toFixed(2)+' in)';
+    const fps=r/q*Math.PI*(d/25.4)/60/12;$('#dFps').textContent=fps.toFixed(1);$('#dReal').textContent=(fps*.8).toFixed(1);$('#dCross').textContent=(12/(fps*.8)).toFixed(1);};
+  ['dRpm','dRatio','dWheel'].forEach(i=>$('#'+i).addEventListener('input',upd));
+  document.querySelectorAll('#rpmChips .chip').forEach(b=>b.addEventListener('click',()=>{$('#dRpm').value=b.dataset.r;upd();}));upd();
+}
+
+/* ---------- 03 intake ---------- */
+const SORT=[['Lift a game piece and place it on a tall structure.','arm'],['Sweep lots of balls off the floor while driving.','front'],['Hold a ring by expanding from the inside.','grip'],['Collect from a human player station without another motor.','passive'],['Squeeze a block from the sides for precise alignment.','grip']];
+const SORTOPTS={front:'Front intake',arm:'Arm intake',grip:'Gripper',passive:'Passive intake'};
+function renderIntake(m){
+  return hero(m,'The intake lets your robot acquire and control game pieces. For a shooter robot, it also has to feed pieces to the flywheel one at a time.',[['“Own it”','Goal'],['4','Families']])+
+  `<section class="panel"><p class="quote">“Touch it, own it.”</p><h3>Questions to ask first</h3>${listHTML(['Where does the robot pick up pieces: the floor, a human player station, or both?','How do the piece’s size and shape change the design?','If the intake sticks out past the frame, what is its starting position?','How does it hand pieces to the next mechanism (storage, indexer, shooter)?','How will it survive hitting another robot or a wall?'])}</section>
+  <section class="panel"><header><h2>Intake families</h2><span class="eyebrow">Tap to flip</span></header>${cardsHTML([
+   ['Front intake','Rollers across the front. Fixed, “slap-down” from a pivot, or on a 4-bar linkage. Great for sweeping balls.'],
+   ['Arm intake','At the end of an arm for pick-and-place. Side-to-side types center a piece; top-and-bottom types pull it in with wheels or belts.'],
+   ['Gripper','Grabs one piece: parallel plates, top-and-bottom clamp, or expanding inside a hollow piece.'],
+   ['Passive intake','No motor. Often used at a human player station. Saves a motor port once tuned.'],
+   ['Indexer','Moves pieces from the intake into position, one at a time, so the shooter fires consistently.'],
+   ['Compliant wheel','Squishy wheel that grips. Lower durometer = squishier.']])}</section>
+  <section class="panel"><header><h2>Materials & tips</h2></header><div class="cols">
+   <div><h3>Materials</h3>${listHTML(['Compliant wheels for grip','Star or flap wheels to sweep','Mecanum/vectored wheels to center a piece','Rubber bands, surgical tubing, or TPU for grip','Silicone cast in 3D-printed molds for custom rollers'])}</div>
+   <div><h3>Build tips</h3>${listHTML(['Sides of 3D prints, polycarbonate, or wood. Never acrylic.','Retract inside the frame when not intaking.','Hold pieces securely during fast moves (retention).','Chain or belts sync both sides of an arm intake.','Prototype fast: cardboard and zip ties first, metal later.'])}</div></div></section>
+  <section class="panel"><header><h2>Pick the intake</h2><span class="eyebrow">Match each job</span></header>
+   <div style="display:flex;flex-direction:column;gap:8px">${SORT.map((s,i)=>`<div class="sort-item"><p>${esc(s[0])}</p><select id="sort-${i}" aria-label="Intake type for: ${esc(s[0])}"><option value="">Choose…</option>${Object.entries(SORTOPTS).map(([k,v])=>`<option value="${k}">${v}</option>`).join('')}</select><span class="mark" id="mark-${i}"></span></div>`).join('')}</div>
+   <div class="btn-row"><button class="btn" type="button" id="sortCheck">Check answers</button><span class="why" id="sortRes"></span></div></section>
+  ${quizHTML('intake')}${doneHTML()}`;
+}
+function wireIntake(){
+  $('#sortCheck').addEventListener('click',()=>{let ok=0;SORT.forEach((s,i)=>{const v=$('#sort-'+i).value,mk=$('#mark-'+i);if(!v){mk.textContent='';return;}const r=v===s[1];if(r)ok++;mk.textContent=r?'✓ yes':'✗ retry';mk.className='mark '+(r?'ok':'no');});$('#sortRes').textContent=`${ok} of ${SORT.length} correct.`;});
+}
+
+/* ---------- 04 shooter ---------- */
+function renderShooter(m){
+  return hero(m,'A flywheel shooter turns motor speed into launch speed. Consistent shots come from steady RPM, the right angle, and waiting for the wheel to recover between shots.',[['RPM','Hold it steady'],['Angle','Set the arc'],['Recovery','Between shots']])+
+  `<section class="panel"><header><h2>Shooter anatomy</h2><span class="eyebrow">Tap to flip</span></header>${cardsHTML([
+   ['Flywheel','A heavy spinning wheel that stores energy and transfers it to the piece. More mass = less slowdown per shot.'],
+   ['Hood','The curved surface opposite the wheel. Its angle sets the launch angle; some hoods adjust with a servo.'],
+   ['Compression','How much the piece is squeezed between wheel and hood. Too little slips; too much jams and slows the wheel.'],
+   ['Single vs. dual wheel','One wheel + hood adds backspin. Two counter-rotating wheels launch straighter with less spin.'],
+   ['Feeder','Pushes one piece into the flywheel only when the wheel is at speed.'],
+   ['Recovery time','After a shot the wheel slows down. Wait until it is back at target RPM before firing again.']])}</section>
+  <section class="panel"><header><h2>Velocity control</h2></header>
+   <p><code>setPower()</code> sets voltage, so RPM drops as the battery drains and after every shot. <code>setVelocity()</code> uses the encoder to hold a target speed.</p>
+   ${codeHTML(`DcMotorEx flywheel = hardwareMap.get(DcMotorEx.class, "flywheel");
+flywheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+final double TICKS_PER_REV = 28;   // encoder counts per motor-shaft revolution (bare motor)
+double targetRpm = 3000;
+double targetTps = targetRpm / 60.0 * TICKS_PER_REV;   // ticks per second
+flywheel.setVelocity(targetTps);
+
+boolean atSpeed = Math.abs(flywheel.getVelocity() - targetTps) < 50;
+if (atSpeed && gamepad1.right_bumper) feeder.setPosition(FEED);  // only feed when ready
+telemetry.addData("Flywheel RPM", flywheel.getVelocity() / TICKS_PER_REV * 60);`)}
+   <p class="why">Check your motor’s encoder counts per revolution and add any gearbox ratio. Tune the motor’s PIDF velocity coefficients if RPM overshoots or recovers slowly.</p></section>
+  <section class="panel"><header><h2>Trajectory lab</h2><span class="eyebrow">Side view · inches</span></header><div class="tool">
+   <div class="ctrls">
+    <div class="ctrl"><label for="sRpm">Flywheel speed</label><output id="sRpmo"></output><input type="range" id="sRpm" min="500" max="6000" step="50" value="2600"></div>
+    <div class="ctrl"><label for="sWheel">Flywheel diameter</label><output id="sWheelo"></output><input type="range" id="sWheel" min="2" max="5" step=".25" value="3"></div>
+    <div class="ctrl"><label for="sEff">Transfer efficiency</label><output id="sEffo"></output><input type="range" id="sEff" min=".3" max=".7" step=".05" value=".5"></div>
+    <div class="ctrl"><label for="sAng">Launch angle</label><output id="sAngo"></output><input type="range" id="sAng" min="10" max="75" step="1" value="45"></div>
+    <div class="ctrl"><label for="sDist">Distance to goal</label><output id="sDisto"></output><input type="range" id="sDist" min="24" max="140" step="2" value="72"></div>
+    <div class="ctrl"><label for="sGoal">Goal opening height</label><output id="sGoalo"></output><input type="range" id="sGoal" min="6" max="48" step="1" value="38"></div>
+   </div>
+   <div><canvas class="view" id="sCv" aria-label="Projectile path from robot to goal"></canvas>
+    <div class="readout" style="margin-top:10px"><div><b id="sV">0</b><span>Exit speed ft/s</span></div><div><b id="sAt">0</b><span>Height at goal (in)</span></div><div><b id="sNeed">0</b><span>RPM needed</span></div></div>
+    <div class="status" id="sS" style="margin-top:10px"></div>
+    <p class="why" style="margin-top:8px">Exit speed ≈ wheel surface speed × efficiency (single wheel + hood is often around 50%). Launch height is 12 in. Air drag is ignored, so real shots fall a bit shorter. Use this to get close, then tune on the field.</p></div></div></section>
+  ${quizHTML('shooter')}${doneHTML()}`;
+}
+function wireShooter(){
+  const cv=$('#sCv'),W=460,H=280;const g=hidpi(cv,W,H);cv.style.aspectRatio=W+'/'+H;const G=386.1,LH=12;
+  const upd=()=>{
+    const rpm=+$('#sRpm').value,dia=+$('#sWheel').value,eff=+$('#sEff').value,ang=+$('#sAng').value*Math.PI/180,dist=+$('#sDist').value,gh=+$('#sGoal').value;
+    $('#sRpmo').textContent=rpm+' RPM';$('#sWheelo').textContent=dia+' in';$('#sEffo').textContent=Math.round(eff*100)+'%';$('#sAngo').textContent=Math.round(ang*180/Math.PI)+'°';$('#sDisto').textContent=dist+' in';$('#sGoalo').textContent=gh+' in';
+    const v=rpm/60*Math.PI*dia*eff;const yAt=x=>LH+x*Math.tan(ang)-G*x*x/(2*v*v*Math.cos(ang)**2);
+    const den=2*Math.cos(ang)**2*(LH+dist*Math.tan(ang)-gh);const need=den>0?Math.sqrt(G*dist*dist/den)/(Math.PI*dia*eff)*60:NaN;
+    $('#sV').textContent=(v/12).toFixed(1);const h=yAt(dist);$('#sAt').textContent=isFinite(h)?h.toFixed(0):'–';$('#sNeed').textContent=isFinite(need)?Math.round(need):'too low';
+    const sx=(W-40)/150,sy=(H-30)/72,X=x=>20+x*sx,Y=y=>H-20-y*sy;
+    g.clearRect(0,0,W,H);g.fillStyle=css('--surface');g.fillRect(0,0,W,H);
+    g.strokeStyle=css('--line');g.lineWidth=1;g.font='10px JetBrains Mono, monospace';g.fillStyle=css('--muted');
+    for(let x=0;x<=144;x+=24){g.beginPath();g.moveTo(X(x),Y(0));g.lineTo(X(x),Y(72));g.stroke();g.fillText(x/12+' ft',X(x)+2,H-6);}
+    for(let y=0;y<=72;y+=24){g.beginPath();g.moveTo(X(0),Y(y));g.lineTo(X(150),Y(y));g.stroke();}
+    g.strokeStyle=css('--ink');g.lineWidth=2;g.beginPath();g.moveTo(0,Y(0));g.lineTo(W,Y(0));g.stroke();
+    g.fillStyle=css('--blue');g.fillRect(X(-6),Y(14),X(6)-X(-6),Y(0)-Y(14));
+    const win=4;g.fillStyle=css('--ink');g.fillRect(X(dist)-3,Y(gh-win-12),6,Y(0)-Y(gh-win-12));
+    g.fillStyle=css('--good');g.globalAlpha=.25;g.fillRect(X(dist)-3,Y(gh+win),X(dist+12)-X(dist)+3,Y(gh-win)-Y(gh+win));g.globalAlpha=1;
+    g.strokeStyle=css('--good');g.lineWidth=3;g.beginPath();g.moveTo(X(dist),Y(gh+win));g.lineTo(X(dist+12),Y(gh+win));g.stroke();
+    g.strokeStyle=css('--tape');g.lineWidth=3;g.beginPath();let started=false;
+    for(let x=0;x<=150;x+=1){const y=yAt(x);if(y<0||!isFinite(y))break;started?g.lineTo(X(x),Y(y)):g.moveTo(X(x),Y(y));started=true;}
+    g.stroke();
+    const hit=isFinite(h)&&Math.abs(h-gh)<=win;const s=$('#sS');s.className='status '+(hit?'ok':'bad');
+    s.textContent=hit?'Scores! The piece reaches the goal opening.':!isFinite(h)||h<gh?`Short: ${isFinite(h)&&h>0?(gh-h).toFixed(0)+' in low at the goal':'never reaches the goal'}. Add RPM or adjust the angle.`:`Long: ${(h-gh).toFixed(0)} in high at the goal. Lower RPM or angle.`;
+  };
+  ['sRpm','sWheel','sEff','sAng','sDist','sGoal'].forEach(i=>$('#'+i).addEventListener('input',upd));upd();
+}
+
+/* ---------- 05 autonomous ---------- */
+const CYCLE=['Read alliance + start position during INIT','Detect the AprilTag / game randomization','Drive to the launch spot (encoders or odometry)','Spin up the flywheel and wait until at speed','Feed and shoot each piece','Drive to collect more pieces','Park before time runs out'];
+let cycleOrder=[2,5,0,4,6,1,3];
+function renderAutonomous(m){
+  return hero(m,'In autonomous no one holds the controller. You break a driver’s actions into exact steps, then make them repeat the same way every match.',[['30 s','Typical auto period'],['30–50%','Power for accuracy'],['1 at a time','Change values']])+
+  `<section class="panel"><header><h2>Key ideas</h2><span class="eyebrow">Tap to flip</span></header>${cardsHTML([
+   ['Sequential logic','Steps run in order: drive, stop, turn, stop. Order matters.'],
+   ['Time-based','“40% power for 2 s.” Simple, but distance changes with battery level and floor.'],
+   ['Encoders','Count motor rotations so “drive 24 in” is the same every time.'],
+   ['Odometry pods','Unpowered tracking wheels with encoders. They measure real motion even when drive wheels slip, so you always know the robot’s x, y, heading.'],
+   ['Path libraries','Road Runner and Pedro Pathing turn odometry into smooth, fast paths. Learn encoders first.'],
+   ['State machine','A variable tracks the current step. Each loop: do the step, check if done, move on. Lets you read sensors while moving.']])}</section>
+  <section class="panel"><header><h2>Encoder drive</h2></header>
+   ${codeHTML(`// goBILDA 312 RPM motor: 537.7 ticks/rev; 104 mm wheel
+final double TICKS_PER_INCH = 537.7 / (Math.PI * 104 / 25.4);
+
+void driveInches(double inches, double power) {
+  int target = (int) (inches * TICKS_PER_INCH);
+  for (DcMotor m : driveMotors) {
+    m.setTargetPosition(m.getCurrentPosition() + target);
+    m.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    m.setPower(power);
+  }
+  while (opModeIsActive() && leftFront.isBusy()) { idle(); }
+  for (DcMotor m : driveMotors) m.setPower(0);
+  sleep(250);   // let the robot settle before the next step
+}`)}
+   <p class="why">Ticks per revolution depend on your motor and gearbox. Look it up on the supplier’s product page.</p></section>
+  <section class="panel"><header><h2>State machine pattern</h2></header>
+   ${codeHTML(`enum Step { DRIVE_TO_SHOT, SPIN_UP, SHOOT, PARK, DONE }
+Step step = Step.DRIVE_TO_SHOT;
+
+while (opModeIsActive()) {
+  switch (step) {
+    case DRIVE_TO_SHOT: if (drive.followDone()) step = Step.SPIN_UP; break;
+    case SPIN_UP:       flywheel.setVelocity(TARGET);
+                        if (atSpeed()) step = Step.SHOOT; break;
+    case SHOOT:         if (shootAll()) step = Step.PARK; break;
+    case PARK:          if (parked()) step = Step.DONE; break;
+  }
+  telemetry.addData("Step", step); telemetry.update();
+}`)}</section>
+  <section class="panel"><header><h2>Order the autonomous routine</h2><span class="eyebrow">Use ↑ ↓</span></header>
+   <ol class="order" id="order"></ol><div class="btn-row"><button class="btn" type="button" id="orderCheck">Check order</button><span class="why" id="orderRes"></span></div></section>
+  <section class="panel"><header><h2>Debugging habits</h2></header>${listHTML(['Start with one move. Make sure the robot drives straight.','Add telemetry for every step and value.','Change one value at a time.','Short 0.2–0.5 s pauses help the robot settle.','Run each autonomous at least 5 times in a row before trusting it.'])}</section>
+  ${quizHTML('autonomous')}${doneHTML()}`;
+}
+function wireAutonomous(){
+  const ol=$('#order');const paint=()=>{ol.innerHTML=cycleOrder.map((c,i)=>`<li><span>${esc(CYCLE[c])}</span><button type="button" data-i="${i}" data-d="-1" aria-label="Move up">↑</button><button type="button" data-i="${i}" data-d="1" aria-label="Move down">↓</button></li>`).join('');};
+  ol.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const i=+b.dataset.i,j=i+ +b.dataset.d;if(j<0||j>=cycleOrder.length)return;[cycleOrder[i],cycleOrder[j]]=[cycleOrder[j],cycleOrder[i]];paint();$('#orderRes').textContent='';});
+  $('#orderCheck').addEventListener('click',()=>{const n=cycleOrder.filter((c,i)=>c===i).length;$('#orderRes').textContent=n===CYCLE.length?'Perfect: select → detect → drive → spin up → shoot → collect → park.':`${n} of ${CYCLE.length} in the right spot.`;});paint();
+}
+
+/* ---------- 06 starting positions ---------- */
+/* Field coordinates for this lab: inches, origin top-left, x right, y down. Blue drives from the left wall, Red from the right.
+   Headings in degrees, 0 = facing right, +90 = facing up (counter-clockwise). Red = Blue mirrored across x = 72. */
+const STARTS={1:{x:12,y:60,h:0},2:{x:12,y:120,h:0}};
+const TARGET={x:40,y:40,r:14};
+const SP={alliance:'blue',pos:1,mirror:true,both:false,prog:{1:[['drive',28],['turn',90],['drive',20]],2:[['drive',28],['turn',90],['drive',80]]}};
+const SP_SAMPLE=JSON.parse(JSON.stringify(SP.prog));
+function poseFor(alliance,pos){const s=STARTS[pos];return alliance==='blue'?{x:s.x,y:s.y,h:s.h}:{x:144-s.x,y:s.y,h:180-s.h};}
+function runPath(alliance,pos,mirror){
+  const p=poseFor(alliance,pos),pts=[[p.x,p.y]];let {x,y,h}=p;const sign=alliance==='red'&&mirror?-1:1;
+  for(const [t,v] of SP.prog[pos]){const val=+v||0;
+    if(t==='turn')h+=val*sign;
+    else if(t==='strafe'){const a=(h+90*sign)*Math.PI/180;x+=Math.cos(a)*val;y-=Math.sin(a)*val;pts.push([x,y]);}
+    else{const a=h*Math.PI/180;x+=Math.cos(a)*val;y-=Math.sin(a)*val;pts.push([x,y]);}}
+  const tx=alliance==='blue'?TARGET.x:144-TARGET.x;const ok=Math.hypot(x-tx,y-TARGET.y)<=TARGET.r;const wall=pts.some(([a,b])=>a<9||b<9||a>135||b>135);
+  return{pts,end:{x,y,h},ok:ok&&!wall,wall};
+}
+function renderStarts(m){
+  return hero(m,'Every match you might start on Red or Blue, in Position 1 or Position 2. Good teams write one autonomous, mirror it for the other alliance, and pick the start during INIT.',[['2','Alliances'],['2+','Start tiles'],['1','Path to maintain']])+
+  `<section class="panel"><header><h2>The idea: mirror, don’t rewrite</h2></header><div class="cols">
+   <div>${listHTML(['The Red and Blue sides of most FTC fields are mirror images.','Distances stay the same on both alliances.','Left turns become right turns (and left strafes become right strafes).','Headings mirror too: facing 0° on Blue becomes facing 180° on Red.','Position 1 and Position 2 are different paths, because they start on different tiles.'])}</div>
+   <div class="note"><b>Real fields vary.</b> Some seasons mirror left-right, some rotate the field, and the start tiles and goal spots change every year. The drawing below is a generic example. Check this season’s Game Manual for the real layout, then apply the same idea.</div></div></section>
+  <section class="panel"><header><h2>Start position planner</h2><span class="eyebrow">Write it for Blue, run it anywhere</span></header>
+   <div class="tool"><div><canvas class="view" id="spCv" aria-label="Field with alliance starting positions and robot path"></canvas>
+     <div class="status" id="spS" style="margin-top:10px"></div></div>
+    <div class="ctrls">
+     <div class="btn-row"><div class="seg blue" role="group" aria-label="Alliance" id="spAll"><button type="button" data-a="blue">Blue</button><button type="button" data-a="red">Red</button></div>
+      <div class="seg" role="group" aria-label="Start position" id="spPos"><button type="button" data-p="1">Position 1</button><button type="button" data-p="2">Position 2</button></div></div>
+     <label class="toggle" style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="spMirror" checked> Mirror turns for Red</label>
+     <label class="toggle" style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="spBoth"> Show all four starts</label>
+     <h3 id="spProgTitle"></h3>
+     <ol class="prog-list" id="spList"></ol>
+     <div class="btn-row"><button class="btn ghost" type="button" id="spAddD">+ Drive</button><button class="btn ghost" type="button" id="spAddT">+ Turn</button><button class="btn ghost" type="button" id="spAddS">+ Strafe</button><button class="btn ghost" type="button" id="spReset">Sample</button></div>
+     <p class="why">Turn: + is left (counter-clockwise). Strafe: + is left (mecanum only). Goal: end inside your alliance’s launch zone (the dashed circle). Try Red with mirroring off to see what goes wrong.</p>
+    </div></div></section>
+  <section class="panel"><header><h2>Choosing the start in code</h2></header>
+   ${codeHTML(`enum Alliance { RED, BLUE }
+Alliance alliance = Alliance.BLUE;
+int startPos = 1;
+
+// INIT loop: drivers pick before pressing Start
+while (opModeInInit()) {
+  if (gamepad1.x) alliance = Alliance.BLUE;
+  if (gamepad1.b) alliance = Alliance.RED;
+  if (gamepad1.dpad_up)   startPos = 1;
+  if (gamepad1.dpad_down) startPos = 2;
+  telemetry.addData("Alliance", alliance);
+  telemetry.addData("Start position", startPos);
+  telemetry.addLine("X = Blue, B = Red, D-pad up/down = position");
+  telemetry.update();
+}
+
+// One path, written for Blue. Red flips every turn and strafe.
+double m = (alliance == Alliance.RED) ? -1 : 1;
+if (startPos == 1) {
+  driveInches(28, 0.4);
+  turnDegrees(90 * m, 0.4);
+  driveInches(20, 0.4);
+} else {
+  driveInches(28, 0.4);
+  turnDegrees(90 * m, 0.4);
+  driveInches(80, 0.4);
+}`)}
+   <p class="why">With odometry or Road Runner, mirror the poses instead: <span class="mono">x → fieldWidth − x</span> and <span class="mono">heading → 180° − heading</span> for a left-right mirrored field. Some teams keep separate OpModes named “Red 1”, “Blue 2”, and so on that all call the same shared code.</p></section>
+  <section class="panel"><header><h2>Match-day checklist</h2></header>${listHTML(['Telemetry shows the correct alliance and position before Start.','The robot is placed exactly on its tile, lined up the same way it was in practice (use a jig or tape mark).','The IMU heading is reset in INIT so turns are correct.','Talk with your alliance partner: which start does each robot take, and do your paths cross?'])}</section>
+  ${quizHTML('starts')}${doneHTML()}`;
+}
+function wireStarts(){
+  const cv=$('#spCv'),W=440,H=440;const g=hidpi(cv,W,H);cv.style.aspectRatio='1';const k=W/144;
+  const paintCtrl=()=>{document.querySelectorAll('#spAll button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.a===SP.alliance));$('#spAll').className='seg '+SP.alliance;
+    document.querySelectorAll('#spPos button').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.p===SP.pos));
+    $('#spProgTitle').textContent=`Program for Position ${SP.pos} (written as Blue)`;
+    $('#spList').innerHTML=SP.prog[SP.pos].map((s,i)=>`<li><span class="mono" style="width:22px;color:var(--muted)">${i+1}</span><select data-i="${i}" data-f="t" aria-label="Step ${i+1} type"><option value="drive" ${s[0]==='drive'?'selected':''}>Drive</option><option value="turn" ${s[0]==='turn'?'selected':''}>Turn</option><option value="strafe" ${s[0]==='strafe'?'selected':''}>Strafe</option></select><input type="number" step="any" data-i="${i}" data-f="v" value="${s[1]}" aria-label="Step ${i+1} amount"><span class="mono why">${s[0]==='turn'?'°':'in'}</span><button class="x" type="button" data-del="${i}" aria-label="Delete step ${i+1}">✕</button></li>`).join('');};
+  const robot=(p,col,alpha)=>{g.save();g.globalAlpha=alpha;g.translate(p.x*k,p.y*k);g.rotate(-p.h*Math.PI/180);g.fillStyle=col;g.fillRect(-9*k,-9*k,18*k,18*k);g.fillStyle=css('--tape');g.beginPath();g.moveTo(9*k,0);g.lineTo(2*k,-5*k);g.lineTo(2*k,5*k);g.closePath();g.fill();g.restore();};
+  const draw=()=>{
+    g.clearRect(0,0,W,H);g.fillStyle=css('--tile');g.fillRect(0,0,W,H);g.strokeStyle=css('--tile-seam');g.lineWidth=1;
+    for(let i=1;i<6;i++){g.beginPath();g.moveTo(i*24*k,0);g.lineTo(i*24*k,H);g.moveTo(0,i*24*k);g.lineTo(W,i*24*k);g.stroke();}
+    g.fillStyle=css('--blue');g.fillRect(0,0,5,H);g.fillStyle=css('--red');g.fillRect(W-5,0,5,H);
+    g.setLineDash([2,6]);g.strokeStyle=css('--muted');g.beginPath();g.moveTo(72*k,0);g.lineTo(72*k,H);g.stroke();g.setLineDash([]);
+    [['blue',TARGET.x],['red',144-TARGET.x]].forEach(([a,x])=>{g.fillStyle=css(a==='blue'?'--blue':'--red');g.globalAlpha=.85;g.beginPath();g.moveTo(a==='blue'?0:W,0);g.lineTo(a==='blue'?18*k:W-18*k,0);g.lineTo(a==='blue'?0:W,18*k);g.closePath();g.fill();g.globalAlpha=1;
+      g.setLineDash([5,4]);g.strokeStyle=css(a==='blue'?'--blue':'--red');g.lineWidth=2;g.beginPath();g.arc(x*k,TARGET.y*k,TARGET.r*k,0,7);g.stroke();g.setLineDash([]);});
+    g.font=`700 ${11}px Barlow Condensed, sans-serif`;g.fillStyle=css('--ink');
+    for(const a of ['blue','red'])for(const p of [1,2]){const s=poseFor(a,p);g.strokeStyle=css(a==='blue'?'--blue':'--red');g.lineWidth=1.5;g.strokeRect((s.x-10)*k,(s.y-10)*k,20*k,20*k);g.fillText(`${a==='blue'?'B':'R'}${p}`,(s.x-9)*k,(s.y-12)*k);}
+    g.fillText('BLUE GOAL',22,14);g.textAlign='right';g.fillText('RED GOAL',W-22,14);g.textAlign='left';
+    const runs=SP.both?[['blue',1],['blue',2],['red',1],['red',2]]:[[SP.alliance,SP.pos]];
+    let main;for(const [a,p] of runs){const r=runPath(a,p,SP.mirror);const isMain=a===SP.alliance&&p===SP.pos;if(isMain)main=r;
+      g.strokeStyle=css(a==='blue'?'--blue':'--red');g.lineWidth=isMain?3:1.5;g.globalAlpha=isMain?1:.6;g.beginPath();r.pts.forEach(([x,y],i)=>i?g.lineTo(x*k,y*k):g.moveTo(x*k,y*k));g.stroke();g.globalAlpha=1;
+      robot(r.end,css(a==='blue'?'--blue':'--red'),isMain?1:.55);}
+    if(!main)main=runPath(SP.alliance,SP.pos,SP.mirror);
+    const s=$('#spS');s.className='status '+(main.ok?'ok':'bad');
+    s.textContent=main.ok?`${SP.alliance==='blue'?'Blue':'Red'} ${SP.pos}: ends in the launch zone.`:main.wall?`${SP.alliance==='blue'?'Blue':'Red'} ${SP.pos}: hits the wall. ${SP.alliance==='red'&&!SP.mirror?'Turns weren’t mirrored!':'Check distances.'}`:`${SP.alliance==='blue'?'Blue':'Red'} ${SP.pos}: misses the launch zone. ${SP.alliance==='red'&&!SP.mirror?'Turn on mirroring.':'Adjust the steps.'}`;
+  };
+  const all=()=>{paintCtrl();draw();};
+  $('#spAll').addEventListener('click',e=>{const b=e.target.closest('button');if(b){SP.alliance=b.dataset.a;all();}});
+  $('#spPos').addEventListener('click',e=>{const b=e.target.closest('button');if(b){SP.pos=+b.dataset.p;all();}});
+  $('#spMirror').addEventListener('change',e=>{SP.mirror=e.target.checked;draw();});
+  $('#spBoth').addEventListener('change',e=>{SP.both=e.target.checked;draw();});
+  $('#spList').addEventListener('change',e=>{const i=+e.target.dataset.i;if(isNaN(i))return;const st=SP.prog[SP.pos][i];if(e.target.dataset.f==='t')st[0]=e.target.value;else st[1]=parseFloat(e.target.value)||0;all();});
+  $('#spList').addEventListener('input',e=>{if(e.target.dataset.f==='v'){SP.prog[SP.pos][+e.target.dataset.i][1]=parseFloat(e.target.value)||0;draw();}});
+  $('#spList').addEventListener('click',e=>{const d=e.target.closest('[data-del]');if(d){SP.prog[SP.pos].splice(+d.dataset.del,1);all();}});
+  $('#spAddD').onclick=()=>{SP.prog[SP.pos].push(['drive',12]);all();};$('#spAddT').onclick=()=>{SP.prog[SP.pos].push(['turn',90]);all();};$('#spAddS').onclick=()=>{SP.prog[SP.pos].push(['strafe',12]);all();};
+  $('#spReset').onclick=()=>{SP.prog[SP.pos]=JSON.parse(JSON.stringify(SP_SAMPLE[SP.pos]));all();};
+  all();
+}
+
+/* ---------- 07 computer vision ---------- */
+function renderVision(m){
+  return hero(m,'A webcam lets the robot find tags, game pieces, and goals on its own. In the FTC SDK, a VisionPortal runs the camera and hands each frame to one or more processors.',[['VisionPortal','Camera manager'],['Processors','AprilTag, color']])+
+  `<section class="panel"><header><h2>Key terms</h2><span class="eyebrow">Tap to flip</span></header>${cardsHTML([
+   ['VisionPortal','The SDK object that opens the webcam, shows the camera stream, and runs vision processors on each frame.'],
+   ['Processor','A piece of code that analyzes frames. AprilTagProcessor finds tags; color processors find blobs of a chosen color.'],
+   ['Resolution','More pixels = see smaller, farther targets, but fewer frames per second. 640×480 is a common start.'],
+   ['Exposure','How long each frame collects light. Short exposure = less motion blur, darker image.'],
+   ['Gain','Brightens the image electronically. Raise it when you lower exposure.'],
+   ['Calibration','Lens numbers (focal length, center) the SDK uses to turn tag pixels into real distances. Many common webcams are built in.']])}</section>
+  <section class="panel"><header><h2>Set up a VisionPortal</h2></header>
+   ${codeHTML(`AprilTagProcessor aprilTag = AprilTagProcessor.easyCreateWithDefaults();
+
+VisionPortal portal = new VisionPortal.Builder()
+    .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
+    .setCameraResolution(new Size(640, 480))
+    .addProcessor(aprilTag)
+    .build();
+
+// Optional: reduce motion blur once the camera is streaming
+ExposureControl exposure = portal.getCameraControl(ExposureControl.class);
+exposure.setMode(ExposureControl.Mode.Manual);
+exposure.setExposure(6, TimeUnit.MILLISECONDS);
+portal.getCameraControl(GainControl.class).setGain(250);
+
+// Save processing time when you don't need vision
+portal.setProcessorEnabled(aprilTag, false);`)}
+   <p class="why">Name the webcam “Webcam 1” in your robot configuration (or change the name in code). FTC Docs has full VisionPortal and exposure samples.</p></section>
+  <section class="panel"><header><h2>Camera placement</h2></header><div class="cols">
+   <div>${listHTML(['Mount it rigidly. A wobbly camera gives jumpy readings.','Point it where targets will be at the moments you need them (start of auto, at the launch spot).','Measure the camera’s offset from robot center (forward, sideways, height) for localization.','Protect the lens from impacts and game pieces.'])}</div>
+   <div>${listHTML(['Check the stream on the Driver Station (Camera Stream) during INIT.','Test in the real lighting of your venue; gyms and event fields differ.','Close the portal or disable processors when not in use to save CPU.','Keep a backup plan: if the tag isn’t seen within a second or two, run a default path.'])}</div></div></section>
+  <section class="panel"><header><h2>Exposure tuner</h2><span class="eyebrow">Moving robot simulation</span></header><div class="tool">
+   <div class="ctrls">
+    <div class="ctrl"><label for="vExp">Exposure</label><output id="vExpo"></output><input type="range" id="vExp" min="1" max="40" step="1" value="25"></div>
+    <div class="ctrl"><label for="vGain">Gain</label><output id="vGaino"></output><input type="range" id="vGain" min="0" max="255" step="5" value="60"></div>
+    <div class="ctrl"><label for="vSpd">Robot speed</label><output id="vSpdo"></output><input type="range" id="vSpd" min="0" max="60" step="5" value="30"></div>
+   </div>
+   <div><canvas class="view" id="vCv" aria-label="Simulated camera image of an AprilTag"></canvas><div class="status" id="vS" style="margin-top:10px"></div></div></div></section>
+  ${quizHTML('vision')}${doneHTML()}`;
+}
+const TAGBITS=[[0,1,1,0,1,0],[1,0,1,1,0,1],[0,1,0,0,1,1],[1,1,0,1,0,0],[0,0,1,0,1,1],[1,0,0,1,1,0]];
+function drawTag(g,cx,cy,s){const c=s/10;g.fillStyle='#fff';g.fillRect(cx-s/2-c,cy-s/2-c,s+2*c,s+2*c);g.fillStyle='#000';g.fillRect(cx-s/2,cy-s/2,s,s);g.fillStyle='#fff';
+  TAGBITS.forEach((row,i)=>row.forEach((b,j)=>{if(b)g.fillRect(cx-s/2+c*(2+j),cy-s/2+c*(2+i),c,c);}));}
+function wireVision(){
+  const cv=$('#vCv'),W=420,H=260;const g=hidpi(cv,W,H);cv.style.aspectRatio=W+'/'+H;
+  const upd=()=>{const ex=+$('#vExp').value,ga=+$('#vGain').value,sp=+$('#vSpd').value;$('#vExpo').textContent=ex+' ms';$('#vGaino').textContent=ga;$('#vSpdo').textContent=sp+' in/s';
+    const bright=Math.min(1.6,(ex/25)*(.4+ga/150));const blur=sp*ex/1000*12;
+    g.clearRect(0,0,W,H);g.fillStyle='#444';g.fillRect(0,0,W,H);
+    const steps=Math.max(1,Math.round(blur));g.globalAlpha=1/steps;for(let i=0;i<steps;i++)drawTag(g,W/2-blur/2+i,H/2,110);g.globalAlpha=1;
+    g.fillStyle=bright<1?`rgba(0,0,0,${1-bright})`:`rgba(255,255,255,${Math.min(.85,(bright-1)*1.4)})`;g.fillRect(0,0,W,H);
+    const ok=blur<4&&bright>.45&&bright<1.25;const s=$('#vS');s.className='status '+(ok?'ok':'bad');
+    s.textContent=ok?`Tag detected. Motion blur ≈ ${blur.toFixed(1)} px.`:blur>=4?`Too blurry (${blur.toFixed(1)} px). Lower exposure, then raise gain.`:bright<=.45?'Too dark. Raise gain (or exposure).':'Washed out. Lower gain or exposure.';};
+  ['vExp','vGain','vSpd'].forEach(i=>$('#'+i).addEventListener('input',upd));upd();
+}
+
+/* ---------- 08 apriltags ---------- */
+const AT={x:72,y:84,h:90,tag:{x:72,y:0},cam:{hfov:70,max:120},raf:0};
+function tagPose(){const t=AT.tag,a=AT.h*Math.PI/180,f=[Math.cos(a),-Math.sin(a)],l=[-Math.sin(a),-Math.cos(a)],d=[t.x-AT.x,t.y-AT.y];
+  const fwd=d[0]*f[0]+d[1]*f[1],left=d[0]*l[0]+d[1]*l[1];const range=Math.hypot(fwd,left),bearing=Math.atan2(left,fwd)*180/Math.PI;
+  const yaw=((AT.h-90+540)%360)-180;/* camera axis vs. tag face: 0 when the camera looks squarely at the tag's plane */
+  const view=Math.atan2(AT.x-t.x,AT.y-t.y)*180/Math.PI;/* how steeply the camera sees the tag face */
+  const seen=fwd>0&&Math.abs(bearing)<=AT.cam.hfov/2&&range<=AT.cam.max&&Math.abs(view)<70;return{range,bearing,yaw,seen,x:-left,y:fwd};}
+function renderAprilTags(m){
+  return hero(m,'AprilTags are printed square codes placed around the field. Each has an ID, a known size, and (for field tags) a known location, so a camera can tell exactly where the robot is.',[['ID','Which tag'],['Range','How far'],['Bearing','Which way'],['Yaw','Tag angle']])+
+  `<section class="panel"><header><h2>What ftcPose tells you</h2></header><div class="tbl-wrap"><table><thead><tr><th>Value</th><th>Meaning</th><th>Use it to…</th></tr></thead><tbody>
+   <tr><td class="mono">range</td><td>Straight-line distance from the camera lens to the tag center</td><td>Drive until you are a set distance away</td></tr>
+   <tr><td class="mono">bearing</td><td>How far the camera must turn to point at the tag. Positive = tag is to the left</td><td>Turn to face the tag (or a goal next to it)</td></tr>
+   <tr><td class="mono">yaw</td><td>How much the tag is rotated relative to the camera, i.e. how angled you are to its face</td><td>Strafe (mecanum) to line up square with the tag</td></tr>
+   <tr><td class="mono">x, y, z</td><td>Tag position in the camera’s frame: x right, y forward, z up</td><td>Localization math</td></tr>
+   <tr><td class="mono">id / metadata</td><td>Which tag. Metadata (name, size, field position) is null if the tag isn’t in the library</td><td>Ignore unknown tags; pick the right goal or randomization</td></tr></tbody></table></div></section>
+  <section class="panel"><header><h2>AprilTag explorer</h2><span class="eyebrow">Drag the sliders or let the robot drive itself</span></header>
+   <div class="tool"><div><canvas class="view" id="atCv" aria-label="Top-down field with robot camera and AprilTag"></canvas></div>
+    <div class="ctrls">
+     <div class="ctrl"><label for="atX">Robot x (across field)</label><output id="atXo"></output><input type="range" id="atX" min="12" max="132" step="1"></div>
+     <div class="ctrl"><label for="atY">Robot y (from tag wall)</label><output id="atYo"></output><input type="range" id="atY" min="14" max="132" step="1"></div>
+     <div class="ctrl"><label for="atH">Robot heading</label><output id="atHo"></output><input type="range" id="atH" min="0" max="180" step="1"></div>
+     <div class="readout"><div><b id="atR">–</b><span>range (in)</span></div><div><b id="atB">–</b><span>bearing (°)</span></div><div><b id="atYw">–</b><span>yaw (°)</span></div></div>
+     <div class="status" id="atS"></div>
+     <div class="ctrl"><label for="atD">Desired distance</label><output id="atDo"></output><input type="range" id="atD" min="12" max="48" step="1" value="24"></div>
+     <div class="btn-row"><button class="btn tape" type="button" id="atGo">▶ Drive to tag</button><button class="btn ghost" type="button" id="atRand">Random spot</button></div>
+     <p class="why">Camera: 70° field of view, sees tags up to 10 ft. “Drive to tag” uses a simple proportional controller: drive on range error, turn on bearing. Yaw here is 0 when the camera faces the tag’s wall squarely; confirm the sign of yaw on your own robot with telemetry.</p>
+    </div></div></section>
+  <section class="panel"><header><h2>Reading tags in code</h2></header>
+   ${codeHTML(`List<AprilTagDetection> detections = aprilTag.getDetections();
+for (AprilTagDetection d : detections) {
+  if (d.metadata != null) {           // only tags in the library
+    telemetry.addData("Tag ID", d.id);
+    telemetry.addData("Range (in)",    "%.1f", d.ftcPose.range);
+    telemetry.addData("Bearing (deg)", "%.1f", d.ftcPose.bearing);
+    telemetry.addData("Yaw (deg)",     "%.1f", d.ftcPose.yaw);
+  } else {
+    telemetry.addData("Unknown tag", d.id);
+  }
+}
+telemetry.update();`)}</section>
+  <section class="panel"><header><h2>Drive to a tag</h2></header>
+   ${codeHTML(`// Proportional "drive to tag" (tank drive). Tune the gains on your robot.
+final double SPEED_GAIN = 0.02, TURN_GAIN = 0.01, MAX = 0.5;
+double rangeError = d.ftcPose.range - DESIRED_DISTANCE;
+double headingError = d.ftcPose.bearing;
+
+double drive = Range.clip(rangeError * SPEED_GAIN, -MAX, MAX);
+double turn  = Range.clip(headingError * TURN_GAIN, -MAX, MAX);
+leftDrive.setPower(drive - turn);
+rightDrive.setPower(drive + turn);
+// Mecanum: also strafe on yaw, e.g. strafe = Range.clip(-d.ftcPose.yaw * STRAFE_GAIN, -MAX, MAX);`)}
+   <p class="why">The FTC SDK ships complete “RobotAutoDriveToAprilTag” samples (tank and omni). Copy one and tune the gains. Always print the values with telemetry first to confirm the signs on your robot.</p></section>
+  <section class="panel"><header><h2>How teams use tags</h2></header><div class="cols">
+   <div><h3>Before the match starts</h3>${listHTML(['Read a randomization tag during INIT or early auto, then pick a path.','Confirm the robot was placed on the correct starting tile.'])}</div>
+   <div><h3>During the match</h3>${listHTML(['Line up a shot: turn until bearing to the goal tag is near 0.','Fix odometry drift: reset the robot’s position from a tag with a known field location.','Check this season’s Game Manual for which tag IDs mean what.'])}</div></div></section>
+  ${quizHTML('apriltags')}${doneHTML()}`;
+}
+function wireAprilTags(){
+  const cv=$('#atCv'),W=440,H=440;const g=hidpi(cv,W,H);cv.style.aspectRatio='1';const k=W/144;
+  const sync=()=>{$('#atX').value=Math.round(AT.x);$('#atY').value=Math.round(AT.y);$('#atH').value=Math.round(AT.h);};
+  const draw=()=>{
+    const p=tagPose();$('#atXo').textContent=Math.round(AT.x)+' in';$('#atYo').textContent=Math.round(AT.y)+' in';$('#atHo').textContent=Math.round(AT.h)+'°';$('#atDo').textContent=$('#atD').value+' in';
+    g.clearRect(0,0,W,H);g.fillStyle=css('--tile');g.fillRect(0,0,W,H);g.strokeStyle=css('--tile-seam');g.lineWidth=1;
+    for(let i=1;i<6;i++){g.beginPath();g.moveTo(i*24*k,0);g.lineTo(i*24*k,H);g.moveTo(0,i*24*k);g.lineTo(W,i*24*k);g.stroke();}
+    const a=AT.h*Math.PI/180,cx=AT.x*k,cy=AT.y*k,R=AT.cam.max*k,hf=AT.cam.hfov/2*Math.PI/180;
+    g.fillStyle=p.seen?'rgba(30,127,79,.18)':'rgba(127,127,127,.15)';g.beginPath();g.moveTo(cx,cy);g.arc(cx,cy,R,-a-hf,-a+hf);g.closePath();g.fill();
+    if(p.seen){g.strokeStyle=css('--good');g.setLineDash([4,4]);g.lineWidth=1.5;g.beginPath();g.moveTo(cx,cy);g.lineTo(AT.tag.x*k,AT.tag.y*k+4);g.stroke();g.setLineDash([]);}
+    drawTag(g,AT.tag.x*k,10,14);g.fillStyle=css('--ink');g.font='11px JetBrains Mono, monospace';g.textAlign='center';g.fillText('TAG on wall',AT.tag.x*k,30);g.textAlign='left';
+    g.save();g.translate(cx,cy);g.rotate(-a);g.fillStyle=css('--ink');g.fillRect(-9*k,-9*k,18*k,18*k);g.fillStyle=css('--violet');g.fillRect(6*k,-3*k,4*k,6*k);g.restore();
+    $('#atR').textContent=p.seen?p.range.toFixed(1):'–';$('#atB').textContent=p.seen?p.bearing.toFixed(1):'–';$('#atYw').textContent=p.seen?p.yaw.toFixed(1):'–';
+    const s=$('#atS');s.className='status '+(p.seen?'ok':'bad');
+    s.textContent=p.seen?(p.bearing>2?'Tag is to the LEFT (positive bearing).':p.bearing<-2?'Tag is to the RIGHT (negative bearing).':'Tag is straight ahead.'):(p.y<=0||Math.abs(p.bearing)>AT.cam.hfov/2)?'No detection: tag is outside the camera’s view.':p.range>AT.cam.max?'No detection: too far away.':'No detection: viewing the tag at too steep an angle.';
+    return p;};
+  const step=()=>{const p=tagPose();if(!p.seen){$('#atS').textContent+=' Turn toward the tag first.';AT.raf=0;return;}
+    const des=+$('#atD').value,drive=Math.max(-.5,Math.min(.5,(p.range-des)*.02)),turn=Math.max(-.5,Math.min(.5,p.bearing*.01));
+    const a=AT.h*Math.PI/180;AT.x+=Math.cos(a)*drive*2;AT.y-=Math.sin(a)*drive*2;AT.h=Math.max(0,Math.min(180,AT.h+turn*6));
+    AT.x=Math.max(12,Math.min(132,AT.x));AT.y=Math.max(14,Math.min(132,AT.y));sync();draw();
+    if(Math.abs(p.range-des)<.5&&Math.abs(p.bearing)<1){$('#atS').textContent='Arrived: on target distance and facing the tag.';AT.raf=0;return;}
+    AT.raf=requestAnimationFrame(step);};
+  ['atX','atY','atH'].forEach(i=>$('#'+i).addEventListener('input',()=>{AT.x=+$('#atX').value;AT.y=+$('#atY').value;AT.h=+$('#atH').value;draw();}));
+  $('#atD').addEventListener('input',draw);
+  $('#atGo').onclick=()=>{if(AT.raf)cancelAnimationFrame(AT.raf);AT.raf=requestAnimationFrame(step);};
+  $('#atRand').onclick=()=>{if(AT.raf)cancelAnimationFrame(AT.raf);AT.raf=0;AT.x=30+Math.random()*84;AT.y=60+Math.random()*60;const ang=Math.atan2(AT.y-AT.tag.y,AT.tag.x-AT.x)*180/Math.PI;AT.h=Math.max(0,Math.min(180,ang+(Math.random()-.5)*50));sync();draw();};
+  sync();draw();
+}
+
+/* ---------- router ---------- */
+const VIEWS={start:[renderStart],chassis:[renderChassis,wireChassis],drivetrain:[renderDrivetrain,wireDrivetrain],intake:[renderIntake,wireIntake],shooter:[renderShooter,wireShooter],autonomous:[renderAutonomous,wireAutonomous],starts:[renderStarts,wireStarts],vision:[renderVision,wireVision],apriltags:[renderAprilTags,wireAprilTags]};
+function route(){
+  if(AT.raf){cancelAnimationFrame(AT.raf);AT.raf=0;}
+  let id=(location.hash||'#start').slice(1);if(!VIEWS[id])id='start';
+  renderRail(id);const m=MODS.find(x=>x.id===id),main=$('#main');
+  main.style.setProperty('--gc',GROUPS[m.g][1]);
+  main.innerHTML=VIEWS[id][0](m);
+  if(VIEWS[id][1])VIEWS[id][1]();
+  wireCards(main);wireQuiz(main,id);paintDone(id);window.scrollTo(0,0);
+}
+window.addEventListener('hashchange',route);
+try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',route);}catch(e){}
+route();
+</script>
+</body>
+</html>
